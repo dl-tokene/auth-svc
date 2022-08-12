@@ -1,0 +1,15 @@
+type: object
+required:
+  - address
+  - signed_message
+properties:
+  address:
+    type: string
+    pattern: '^(0x)?[0-9a-fA-F]{40}$'
+    example: "0x2a2288cdceEeb2CF60..."
+    description: Address that corresponds to users keypair
+  signed_message:
+    type: string
+    pattern: '^0x[0-9a-fA-F]+$'
+    example: "0x0bf7b3c454fedc179af06cd02f62fb3d89b2ac16962d50137330ffeebe9fac5f6bb2d1f2a971834a8eb84ce0a28894578286812a1131cfe7921b2d325d0b06041c"
+    description: Backend-generated message, signed with MetaMask's private_sign

@@ -1,0 +1,13 @@
+type: object
+required:
+  - id
+  - type
+properties:
+  id:
+    type: int64
+    description: User ID
+    example: 83
+  type:
+    type: string
+    enum:
+      - user

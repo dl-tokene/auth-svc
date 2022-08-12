@@ -1,0 +1,24 @@
+allOf:
+- $ref: '#/components/schemas/CPKAddressKey'
+- type: object
+  required:
+    - attributes
+  properties:
+    attributes:
+      type: object
+      required:
+        - address
+        - cpk_address
+        - user_id
+      properties:
+        address:
+          type: string
+          example: "0x2a2288cdceEeb2CF60..."
+        cpk_address:
+          type: string
+          example: "0x5ac930AB930C..."
+        user_id:
+          type: int64
+          example: 83
+        label:
+          type: string

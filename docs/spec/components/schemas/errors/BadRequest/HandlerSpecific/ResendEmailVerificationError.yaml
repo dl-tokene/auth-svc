@@ -1,0 +1,27 @@
+type: object
+required:
+  - title
+  - status
+  - code
+properties:
+  title:
+    type: string
+    description: "Short, human-readable summary of the problem"
+    example: "Bad Request"
+  detail:
+    type: string
+    description: "Human-readable explanation specific to this occurrence of the problem"
+    example: "Userdata for user with id '596' doesn't exist. It is required in order to perform your operation."
+  status:
+    type: integer
+    description: "HTTP status code applicable to this problem"
+    enum:
+      - 400
+  code:
+    type: string
+    example: "resource_not_found"
+    description: |-
+      Application-specific error code, expressed as a string value
+
+      Resource Dependency:
+      * "resource_not_found"

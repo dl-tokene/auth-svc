@@ -1,0 +1,49 @@
+post:
+  tags:
+    - User Authentication
+  summary: Get Auth Nonce Message
+  description: |-
+    Request a new nonce message here, sign it with metamask and use it to log in or register
+
+    Nonce message is issued per-address and expires quickly
+
+    Requesting a new nonce message overwrites the previous one and invalidates it
+  operationId: nonce
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              type: object
+              $ref: '#/components/schemas/AuthNonceRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthNonce'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errors
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NonceError"
+    '500':
+      $ref: "#/components/responses/InternalError"

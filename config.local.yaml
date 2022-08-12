@@ -1,0 +1,21 @@
+log:
+  disable_sentry: true
+
+db:
+  url: postgres://test:test@localhost:5432/test?sslmode=disable
+
+listener:
+  addr: :8000
+
+cop:
+  disabled: true
+  endpoint: "http://..."
+  upstream: "http://..."
+  service_name: nonce-auth-svc
+  service_port: 80
+
+service:
+  token_expire_time: 4h
+  token_key: "0x61dbf961f608d1d0d31bfde550505d53cf63f85ab4cb938159a11aacecc29b3d"
+  nonce_expire_time: 4h
+  refresh_token_expire_time: 24h

@@ -1,0 +1,37 @@
+type: object
+required:
+  - title
+  - status
+  - code
+properties:
+  title:
+    type: string
+    description: "Short, human-readable summary of the problem"
+    example: "Bad Request"
+  detail:
+    type: string
+    description: "Human-readable explanation specific to this occurrence of the problem"
+    example: "Flowstate for user with ID '593' doesn't exist. It is required in order to perform your operation."
+  status:
+    type: integer
+    description: "HTTP status code applicable to this problem"
+    enum:
+      - 400
+  code:
+    type: string
+    example: "resource_not_found"
+    description: |-
+      Application-specific error code, expressed as a string value
+
+      Resource Dependency:
+      * "resource_not_found"
+
+      General Request Codes:
+      * "bad_request"
+      * "bad_request_data"
+  meta:
+    type: object
+    description: "Object containing non-standard meta-information about the error"
+    example:
+      code: something wrong with field 'code'
+      issuer_url: something wrong with field 'issuer_url'

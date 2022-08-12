@@ -1,0 +1,14 @@
+allOf:
+- $ref: '#/components/schemas/AddressKey'
+- type: object
+  required:
+    - attributes
+  properties:
+    attributes:
+      type: object
+      required:
+        - address
+      properties:
+        address:
+          type: string
+          example: "0x2a2288cdceEeb2CF60..."

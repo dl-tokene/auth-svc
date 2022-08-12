@@ -1,0 +1,44 @@
+post:
+  tags:
+    - User Authentication
+  summary: Registration
+  operationId: register
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              type: object
+              $ref: '#/components/schemas/Register'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/Registration'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errors
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrationError"
+    '409':
+      $ref: "#/components/responses/Conflict"
+    '500':
+      $ref: "#/components/responses/InternalError"

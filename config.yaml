@@ -1,0 +1,21 @@
+log:
+  disable_sentry: true
+
+db:
+  url: postgres://...@.../...?sslmode=disabled
+
+listener:
+  addr: :8000
+
+cop:
+  disabled: true
+  endpoint: "http://..."
+  upstream: "http://..."
+  service_name: nonce-auth-svc
+  service_port: 80
+
+service:
+  token_expire_time: 1h or other value, see time.ParseDuration
+  token_key:  "something sha256'd, has to be a 64 char long hex string"
+  nonce_expire_time: 1m or other value, see time.ParseDuration
+  refresh_token_expire_time: 8hor other value, see time.ParseDuration

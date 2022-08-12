@@ -1,0 +1,22 @@
+allOf:
+  - $ref: '#/components/schemas/UserKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - id
+          - smt_claims
+        properties:
+          id:
+            type: int64
+            example: 83
+            description: User ID
+          email:
+            type: string
+            example: 'test@mail.com'
+          smt_claims:
+            type: float64
+            example: 10.20395
