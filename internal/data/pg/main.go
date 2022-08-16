@@ -29,9 +29,6 @@ func (m *masterQ) Address() data.AddressQ {
 func (m *masterQ) Nonce() data.NonceQ {
 	return newNonceQ(m.db)
 }
-func (m *masterQ) SMTClaims() data.SMTClaimsQ {
-	return newSMTClaimsQ(m.db)
-}
 func (m *masterQ) Transaction(fn func(q data.MasterQ) error) error {
 	return m.db.Transaction(func() error {
 		return fn(m)
