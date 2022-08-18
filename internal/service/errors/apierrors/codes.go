@@ -7,15 +7,10 @@ const (
 	CodeBadRequestData = "bad_request_data"
 	// Login
 	CodeNotRegistered = "not_registered"
-	// Email Verification
-	CodeInvalidEmailVerification = "invalid_email_verification"
 	// Quotes
 	CodeFailedPriceLookup = "failed_price_lookup"
 	// Address Deletion
 	CodeActiveAddressDeactivation = "active_address_deactivation"
-	// Yoti
-	CodeFailedYotiExchange = "failed_yoti_exchange"
-	CodeFailedYotiVerification = "failed_yoti_verification"
 	// Signature Verification
 	CodeNonceNotFound               = "nonce_not_found"
 	CodeSignatureVerificationFailed = "signature_verification_failed"
@@ -28,14 +23,10 @@ const (
 	CodeAddressExists = "address_exists"
 	// Suspended/Rejected User
 	CodeUserSuspended = "user_suspended"
-	CodeUserRejected = "user_rejected"
-	// Verification Deletion
-	CodeVerificationDeletionNotSupported = "verification_deletion_not_supported"
-	// Faucets
-	CodeFaucetAlreadyUsed = "faucet_already_used"
+	CodeUserRejected  = "user_rejected"
 	// Not owned resources
 	CodeResourceNotOwned = "resource_not_owned"
-	CodeNotAddressOwner = "not_address_owner"
+	CodeNotAddressOwner  = "not_address_owner"
 	// General Errors
 	CodeBadRequest    = "bad_request"
 	CodeUnauthorized  = "unauthorized"
