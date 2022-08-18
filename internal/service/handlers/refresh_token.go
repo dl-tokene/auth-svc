@@ -23,7 +23,7 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 	userID, apiErr, err := helpers.Authenticate(helpers.AuthTypeSession, r)
 	if apiErr != nil || err != nil {
-		logger.WithError(err).Error("failed authentication")
+		logger.WithError(err).Info("failed authentication")
 		ape.RenderErr(w, apiErr)
 		return
 	}
@@ -35,12 +35,12 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := db.User().FilterByID(userID).Get()
+	user := db.Users().FilterByUserID(userID).Get()
 	if user == nil {
 		ape.RenderErr(w, errors.NotFound(fmt.Sprintf("User with id %d doesn't exist", userID)))
 		return
 	}
-	address := db.Address().FilterByUserID(userID).Get()
+	address := db.Users().FilterByUserID(userID).Get()
 	if address == nil {
 		errorText := fmt.Sprintf("address doesn't exist for user with ID %d", userID)
 		logger.Error(errorText)

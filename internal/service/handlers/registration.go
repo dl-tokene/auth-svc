@@ -24,7 +24,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	existingAddress := db.Address().FilterByAddress(ethAddress).Get()
+	existingAddress := db.Users().FilterByAddress(ethAddress).Get()
 	if existingAddress != nil {
 		ape.RenderErr(w, errors.Conflict(errors.Details(errors.CodeAddressExists)))
 		return
@@ -46,25 +46,22 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// success logic
-	user := data.User{}
-	var address data.Address
+	var user data.User
 	_ = db.Transaction(func(db data.MasterQ) error {
-		user = db.User().Insert(user)
-		address = db.Address().Insert(data.Address{
+		user = db.Users().Insert(data.User{
 			Address: ethAddress,
-			UserID:  user.ID,
 		})
 		return nil
 	})
 
-	token, err := helpers.GenerateJWT(&address, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	token, err := helpers.GenerateJWT(&user, helpers.AuthTypeSession, helpers.ServiceConfig(r))
 	if err != nil {
 		details := "failed to generate a token"
 		logger.WithError(err).Error(details)
 		ape.RenderErr(w, errors.InternalError(details))
 		return
 	}
-	refreshToken, err := helpers.GenerateRefreshToken(&address, helpers.ServiceConfig(r))
+	refreshToken, err := helpers.GenerateRefreshToken(&user, helpers.ServiceConfig(r))
 	if err != nil {
 		details := "failed to generate a refresh token"
 		logger.WithError(err).Error(details)
@@ -79,7 +76,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		helpers.ServiceConfig(r).TokenExpireTime,
 		helpers.ServiceConfig(r).RefreshTokenExpireTime,
 		user,
-		address,
 	)
 
 	w.WriteHeader(http.StatusCreated)

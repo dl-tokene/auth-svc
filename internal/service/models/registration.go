@@ -7,7 +7,7 @@ import (
 	"gitlab.com/tokene/nonce-auth-svc/resources"
 )
 
-func NewRegistrationModel(token, refreshToken string, expireTime, expireRefreshTime time.Duration, user data.User, address data.Address) resources.RegistrationResponse {
+func NewRegistrationModel(token, refreshToken string, expireTime, expireRefreshTime time.Duration, user data.User) resources.RegistrationResponse {
 	response := resources.RegistrationResponse{
 		Data: resources.Registration{
 			Key: resources.NewKeyInt64(user.ID, resources.REGISTRATION),
@@ -17,8 +17,7 @@ func NewRegistrationModel(token, refreshToken string, expireTime, expireRefreshT
 				ExpiresIn:        int64(expireTime.Seconds()),
 				RefreshExpiresIn: int64(expireRefreshTime.Seconds()),
 				TokenType:        "JWT",
-				User:             newUserModel(user, nil, 0),
-				Address:          NewAddressModel(address),
+				User:             NewUserModel(user),
 			},
 		},
 	}

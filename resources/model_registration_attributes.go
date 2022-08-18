@@ -5,8 +5,7 @@
 package resources
 
 type RegistrationAttributes struct {
-	AccessToken string  `json:"access_token"`
-	Address     Address `json:"address"`
+	AccessToken string `json:"access_token"`
 	// In seconds
 	ExpiresIn int64 `json:"expires_in"`
 	// In hours

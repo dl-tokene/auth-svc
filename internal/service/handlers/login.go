@@ -23,7 +23,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	address := db.Address().FilterByAddress(ethAddress).Get()
+	address := db.Users().FilterByAddress(ethAddress).Get()
 	if address == nil {
 		ape.RenderErr(w, errors.BadRequest(errors.CodeNotRegistered))
 		return

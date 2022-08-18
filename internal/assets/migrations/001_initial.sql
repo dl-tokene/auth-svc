@@ -2,19 +2,14 @@
 
 create table users (
     id bigserial primary key,
-    options text
-);
-
-create table address (
-    address text not null primary key,
-    user_id bigint not null references users(id) on delete cascade
+    address CHAR(42)
 );
 
 create table nonce (
     id bigserial primary key,
     message text not null,
     expires timestamp without time zone not null,
-    address text not null
+    address CHAR(42)
 );
 
 create table log (
@@ -30,5 +25,4 @@ create table log (
 
 drop table log;
 drop table nonce;
-drop table address;
 drop table users;

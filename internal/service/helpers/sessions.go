@@ -15,8 +15,6 @@ import (
 )
 
 const AuthTypeSession = "session"
-const AuthTypeYesFlow = "yes-flow"
-const AuthTypeQuickbuy = "quickbuy"
 
 type standardClaims struct {
 	UserID      int64  `json:"user_id"`
@@ -30,17 +28,11 @@ type refreshTokenClaims struct {
 	jwt.StandardClaims
 }
 
-type quickbuyClaims struct {
-	RememberMeID string `json:"remember_me_id"`
-	Purpose      string `json:"purpose"`
-	jwt.StandardClaims
-}
-
-func GenerateJWT(address *data.Address, purpose string, cfg *config.ServiceConfig) (string, error) {
+func GenerateJWT(user *data.User, purpose string, cfg *config.ServiceConfig) (string, error) {
 	expirationTime := time.Now().Add(cfg.TokenExpireTime)
 	claims := &standardClaims{
-		UserID:      address.UserID,
-		UserAddress: address.Address,
+		UserID:      user.ID,
+		UserAddress: user.Address,
 		Purpose:     purpose,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
@@ -54,10 +46,10 @@ func GenerateJWT(address *data.Address, purpose string, cfg *config.ServiceConfi
 	return tokenString, nil
 }
 
-func GenerateRefreshToken(address *data.Address, cfg *config.ServiceConfig) (string, error) {
+func GenerateRefreshToken(user *data.User, cfg *config.ServiceConfig) (string, error) {
 	expirationTime := time.Now().Add(cfg.RefreshTokenExpireTime)
 	claims := refreshTokenClaims{
-		UserID: address.UserID,
+		UserID: user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -117,19 +109,13 @@ func RetrieveRefreshToken(tokenString string, r *http.Request) (int64, error) {
 	return int64(refreshTokenUserId), nil
 }
 func getSessionToken(authType string, r *http.Request) (string, error) {
-	if authType == AuthTypeSession || authType == AuthTypeQuickbuy {
+	if authType == AuthTypeSession {
 		authHeader := r.Header.Get("Authorization")
 		authHeaderSplit := strings.Split(authHeader, "Bearer ")
 		if len(authHeaderSplit) != 2 {
 			return "", errors.New("invalid Authorization header")
 		}
 		return authHeaderSplit[1], nil
-	} else if authType == AuthTypeYesFlow {
-		sessCookie, err := r.Cookie("flow-token")
-		if err != nil {
-			return "", errors.Wrap(err, "invalid flow-token cookie")
-		}
-		return sessCookie.Value, nil
 	} else {
 		panic(errors.WithStack(errors.New("unexpected authentication type received")))
 	}
