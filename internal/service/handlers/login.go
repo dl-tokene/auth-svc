@@ -14,7 +14,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
 	request, err := requests.NewLoginRequest(r)
 	if err != nil {
-		logger.WithError(err).Info("bad request")
+		logger.WithError(err).Debug("bad request")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
 		return
 	}
@@ -25,7 +25,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	address, _ := db.Users().FilterByAddress(ethAddress).Get()
 	if address == nil {
-		ape.RenderErr(w, errors.BadRequest(errors.CodeNotRegistered))
+		ape.RenderErr(w, errors.BadRequest(errors.CodeNotFound))
 		return
 	}
 
@@ -36,14 +36,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if nonce == nil {
-		logger.WithField("address", ethAddress).Info("nonce not found on login")
+		logger.WithField("address", ethAddress).Debug("nonce not found on login")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeNonceNotFound))
 		return
 	}
 
 	err = helpers.VerifySignature(helpers.NonceToHash(nonce), signature, ethAddress)
 	if err != nil {
-		logger.WithError(err).Info("signature verification failed")
+		logger.WithError(err).Debug("signature verification failed")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeSignatureVerificationFailed, err))
 		return
 	}
@@ -63,7 +63,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		ape.Render(w, errors.InternalError(details))
 		return
 	}
-	//	db.Nonce().FilterByAddress(ethAddress).Delete()
+
 	ape.Render(w, models.NewLoginModel(
 		token,
 		refreshToken,

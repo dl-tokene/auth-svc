@@ -15,7 +15,7 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
 	request, err := requests.NewRefreshToken(r)
 	if err != nil {
-		logger.WithError(err).Info("failed to parse request")
+		logger.WithError(err).Debug("failed to parse request")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
 		return
 	}
@@ -23,14 +23,14 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 	userID, apiErr, err := helpers.Authenticate(helpers.AuthTypeSession, r)
 	if apiErr != nil || err != nil {
-		logger.WithError(err).Info("failed authentication")
+		logger.WithError(err).Debug("failed authentication")
 		ape.RenderErr(w, apiErr)
 		return
 	}
 
 	userID, err = helpers.RetrieveRefreshToken(request.RefreshToken, r)
 	if err != nil {
-		logger.WithError(err).Info("failed to retrieve refresh token")
+		logger.WithError(err).Debug("failed to retrieve refresh token")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
 		return
 	}

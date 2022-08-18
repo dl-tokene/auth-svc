@@ -4,10 +4,10 @@ import "gitlab.com/distributed_lab/kit/pgdb"
 
 type UsersQ interface {
 	Get() (*User, error)
-	Select() []User
-	Insert(value User) User
-	Update(value User) User
-	Delete()
+	Select() ([]User, error)
+	Insert(value User) (*User, error)
+	Update(value User) (*User, error)
+	Delete() error
 
 	Page(pageParams pgdb.OffsetPageParams) UsersQ
 	FilterByAddress(addresses ...string) UsersQ

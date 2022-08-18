@@ -18,7 +18,7 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
 	request, err := requests.NewNonceRequest(r)
 	if err != nil {
-		logger.WithError(err).Info("bad request")
+		logger.WithError(err).Debug("bad request")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
 		return
 	}
@@ -30,11 +30,14 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	expireTime := time.Now().UTC().Add(timeToExpire)
 	nonceToken := nonces.NewToken()
 	var message string
-	if termsHash != nil {
+
+	switch {
+	case termsHash != nil:
 		message = util.NonceToTermsMessage(nonceToken, *termsHash)
-	} else {
+	default:
 		message = util.NonceToMessage(nonceToken)
 	}
+
 	nonce := data.Nonce{
 		Message: nonceToken,
 		Expires: &expireTime,

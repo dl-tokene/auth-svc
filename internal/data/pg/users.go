@@ -43,7 +43,7 @@ func (q *usersQ) Get() (*data.User, error) {
 	return &result, nil
 }
 
-func (q *usersQ) Select() []data.User {
+func (q *usersQ) Select() ([]data.User, error) {
 	var result []data.User
 	stmt := q.sql.Select("*").From(usersTableName)
 	if q.pageParams != nil {
@@ -51,43 +51,44 @@ func (q *usersQ) Select() []data.User {
 	}
 	err := q.db.Select(&result, stmt)
 	if err == sql.ErrNoRows {
-		return nil
+		return nil, nil
 	}
 	if err != nil {
-		panic(errors.Wrap(err, "failed to select addresses from db"))
+		return nil, errors.Wrap(err, "failed to select addresses from db")
 	}
-	return result
+	return result, nil
 }
 
-func (q *usersQ) Insert(value data.User) data.User {
+func (q *usersQ) Insert(value data.User) (*data.User, error) {
 	clauses := structs.Map(value)
 
 	var result data.User
 	stmt := sq.Insert(usersTableName).SetMap(clauses).Suffix("returning *")
 	err := q.db.Get(&result, stmt)
 	if err != nil {
-		panic(errors.Wrap(err, "failed to insert addresses to db"))
+		return nil, errors.Wrap(err, "failed to insert addresses to db")
 	}
-	return result
+	return &result, nil
 }
 
-func (q *usersQ) Update(value data.User) data.User {
+func (q *usersQ) Update(value data.User) (*data.User, error) {
 	clauses := structs.Map(value)
 
 	var result data.User
 	stmt := q.sql.Update(usersTableName).SetMap(clauses).Suffix("returning *")
 	err := q.db.Get(&result, stmt)
 	if err != nil {
-		panic(errors.Wrap(err, "failed to update address in db"))
+		return nil, errors.Wrap(err, "failed to update address in db")
 	}
-	return result
+	return &result, nil
 }
 
-func (q *usersQ) Delete() {
+func (q *usersQ) Delete() error {
 	err := q.db.Exec(q.sql.Delete(usersTableName))
 	if err != nil {
-		panic(errors.Wrap(err, "failed to delete address from db"))
+		return errors.Wrap(err, "failed to delete address from db")
 	}
+	return nil
 }
 
 func (q *usersQ) Page(pageParams pgdb.OffsetPageParams) data.UsersQ {
