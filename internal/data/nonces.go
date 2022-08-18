@@ -18,6 +18,6 @@ type NonceQ interface {
 type Nonce struct {
 	ID      int64      `db:"id" structs:"-"`
 	Message string     `db:"message" structs:"message"`
-	Expires *time.Time `db:"expires" structs:"expires"`
+	Expires *time.Time `db:"expiresat" structs:"expiresat"`
 	Address string     `db:"address" structs:"address"`
 }
