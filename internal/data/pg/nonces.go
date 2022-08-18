@@ -24,60 +24,60 @@ type nonceQ struct {
 	sql sq.StatementBuilderType
 }
 
-func (q *nonceQ) Get() *data.Nonce {
+func (q *nonceQ) Get() (*data.Nonce, error) {
 	var result data.Nonce
 	err := q.db.Get(&result, q.sql.Select("*").From(nonceTableName))
 	if err == sql.ErrNoRows {
-		return nil
+		return nil, err
 	}
 	if err != nil {
-		panic(errors.Wrap(err, "failed to get nonce from db"))
+		return nil, errors.Wrap(err, "failed to get nonce from db")
 	}
-	return &result
+	return &result, nil
 }
 
-func (q *nonceQ) Select() []data.Nonce {
+func (q *nonceQ) Select() ([]data.Nonce, error) {
 	var result []data.Nonce
 	err := q.db.Select(&result, q.sql.Select("*").From(nonceTableName))
 	if err == sql.ErrNoRows {
-		return nil
+		return nil, err
 	}
 	if err != nil {
-		panic(errors.Wrap(err, "failed to select nonces from db"))
+		return nil, errors.Wrap(err, "failed to select nonces from db")
 	}
-	return result
+	return result, nil
 }
 
-func (q *nonceQ) Insert(value data.Nonce) data.Nonce {
+func (q *nonceQ) Insert(value data.Nonce) (*data.Nonce, error) {
 	clauses := structs.Map(value)
 
 	var result data.Nonce
 	stmt := sq.Insert(nonceTableName).SetMap(clauses).Suffix("returning *")
 	err := q.db.Get(&result, stmt)
 	if err != nil {
-		panic(errors.Wrap(err, "failed to insert nonce to db"))
+		return nil, errors.Wrap(err, "failed to insert nonce to db")
 	}
-	return result
+	return &result, nil
 }
 
-func (q *nonceQ) Update(value data.Nonce) data.Nonce {
+func (q *nonceQ) Update(value data.Nonce) (*data.Nonce, error) {
 	clauses := structs.Map(value)
 
 	var result data.Nonce
 	stmt := q.sql.Update(nonceTableName).SetMap(clauses).Suffix("returning *")
 	err := q.db.Get(&result, stmt)
 	if err != nil {
-		panic(errors.Wrap(err, "failed to update nonce in db"))
+		return nil, errors.Wrap(err, "failed to update nonce in db")
 	}
-	return result
+	return &result, nil
 }
 
-func (q *nonceQ) Delete() {
+func (q *nonceQ) Delete() error {
 	err := q.db.Exec(q.sql.Delete(nonceTableName))
 	if err != nil {
-		panic(errors.Wrap(err, "failed to delete nonces from db"))
+		return errors.Wrap(err, "failed to delete nonces from db")
 	}
-	return
+	return nil
 }
 
 func (q *nonceQ) FilterByAddress(addresses ...string) data.NonceQ {

@@ -27,7 +27,7 @@ type usersQ struct {
 	pageParams *pgdb.OffsetPageParams
 }
 
-func (q *usersQ) Get() *data.User {
+func (q *usersQ) Get() (*data.User, error) {
 	var result data.User
 	stmt := q.sql.Select("*").From(usersTableName)
 	if q.pageParams != nil {
@@ -35,12 +35,12 @@ func (q *usersQ) Get() *data.User {
 	}
 	err := q.db.Get(&result, stmt)
 	if err == sql.ErrNoRows {
-		return nil
+		return nil, err
 	}
 	if err != nil {
-		panic(errors.Wrap(err, "failed to get address from db"))
+		return nil, errors.Wrap(err, "failed to get address from db")
 	}
-	return &result
+	return &result, nil
 }
 
 func (q *usersQ) Select() []data.User {

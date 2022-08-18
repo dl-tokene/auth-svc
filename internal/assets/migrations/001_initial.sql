@@ -8,7 +8,7 @@ create table users (
 create table nonce (
     id bigserial primary key,
     message text not null,
-    expires timestamp without time zone not null,
+    expiresAt timestamp without time zone not null,
     address CHAR(42)
 );
 

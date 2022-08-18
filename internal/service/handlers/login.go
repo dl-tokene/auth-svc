@@ -23,13 +23,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	address := db.Users().FilterByAddress(ethAddress).Get()
+	address, _ := db.Users().FilterByAddress(ethAddress).Get()
 	if address == nil {
 		ape.RenderErr(w, errors.BadRequest(errors.CodeNotRegistered))
 		return
 	}
 
-	nonce := db.Nonce().FilterByAddress(ethAddress).Get()
+	nonce, err := db.Nonce().FilterByAddress(ethAddress).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	if nonce == nil {
 		logger.WithField("address", ethAddress).Info("nonce not found on login")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeNonceNotFound))

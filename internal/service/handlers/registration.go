@@ -24,14 +24,24 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	existingAddress := db.Users().FilterByAddress(ethAddress).Get()
+	existingAddress, err := db.Users().FilterByAddress(ethAddress).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	if existingAddress != nil {
 		ape.RenderErr(w, errors.Conflict(errors.Details(errors.CodeAddressExists)))
 		return
 	}
 
 	// validate request
-	nonce := db.Nonce().FilterByAddress(ethAddress).Get()
+	nonce, err := db.Nonce().FilterByAddress(ethAddress).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	if nonce == nil {
 		logger.WithField("address", ethAddress).Info("nonce not found")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeNonceNotFound))
@@ -68,7 +78,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, errors.InternalError(details))
 		return
 	}
-	// db.Nonce().FilterByAddress(ethAddress).Delete()
 
 	result := models.NewRegistrationModel(
 		token,

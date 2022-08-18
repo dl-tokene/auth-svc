@@ -42,9 +42,17 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Required to make sure we have a clean `insert`-able state, as we're racing with nonce cleaner here
-	db.Nonce().FilterByAddress(address).Delete()
-
-	db.Nonce().Insert(nonce)
-
+	err = db.Nonce().FilterByAddress(address).Delete()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
+	_, err = db.Nonce().Insert(nonce)
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	ape.Render(w, models.NewNonceModel(message))
 }

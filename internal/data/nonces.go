@@ -5,11 +5,11 @@ import (
 )
 
 type NonceQ interface {
-	Get() *Nonce
-	Select() []Nonce
-	Insert(value Nonce) Nonce
-	Update(value Nonce) Nonce
-	Delete()
+	Get() (*Nonce, error)
+	Select() ([]Nonce, error)
+	Insert(value Nonce) (*Nonce, error)
+	Update(value Nonce) (*Nonce, error)
+	Delete() error
 
 	FilterByAddress(addresses ...string) NonceQ
 	FilterExpired() NonceQ

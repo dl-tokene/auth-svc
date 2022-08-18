@@ -3,7 +3,7 @@ package data
 import "gitlab.com/distributed_lab/kit/pgdb"
 
 type UsersQ interface {
-	Get() *User
+	Get() (*User, error)
 	Select() []User
 	Insert(value User) User
 	Update(value User) User

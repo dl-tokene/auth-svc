@@ -35,12 +35,22 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := db.Users().FilterByUserID(userID).Get()
+	user, err := db.Users().FilterByUserID(userID).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	if user == nil {
 		ape.RenderErr(w, errors.NotFound(fmt.Sprintf("User with id %d doesn't exist", userID)))
 		return
 	}
-	address := db.Users().FilterByUserID(userID).Get()
+	address, err := db.Users().FilterByUserID(userID).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	if address == nil {
 		errorText := fmt.Sprintf("address doesn't exist for user with ID %d", userID)
 		logger.Error(errorText)
