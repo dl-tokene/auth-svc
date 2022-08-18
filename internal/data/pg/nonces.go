@@ -28,7 +28,7 @@ func (q *nonceQ) Get() (*data.Nonce, error) {
 	var result data.Nonce
 	err := q.db.Get(&result, q.sql.Select("*").From(nonceTableName))
 	if err == sql.ErrNoRows {
-		return nil, err
+		return nil, nil
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get nonce from db")
@@ -40,7 +40,7 @@ func (q *nonceQ) Select() ([]data.Nonce, error) {
 	var result []data.Nonce
 	err := q.db.Select(&result, q.sql.Select("*").From(nonceTableName))
 	if err == sql.ErrNoRows {
-		return nil, err
+		return nil, nil
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select nonces from db")
@@ -87,6 +87,6 @@ func (q *nonceQ) FilterByAddress(addresses ...string) data.NonceQ {
 }
 
 func (q *nonceQ) FilterExpired() data.NonceQ {
-	q.sql = q.sql.Where("expires < localtimestamp")
+	q.sql = q.sql.Where("expiresAt < localtimestamp")
 	return q
 }

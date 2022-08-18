@@ -35,7 +35,7 @@ func (q *usersQ) Get() (*data.User, error) {
 	}
 	err := q.db.Get(&result, stmt)
 	if err == sql.ErrNoRows {
-		return nil, err
+		return nil, nil
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get address from db")
