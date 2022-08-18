@@ -13,7 +13,6 @@ allOf:
           - expires_in
           - refresh_expires_in
           - user
-          - address
         properties:
           access_token:
             type: string
@@ -34,5 +33,3 @@ allOf:
             description: In hours
           user:
             $ref: "#/components/schemas/User"
-          address:
-            $ref: "#/components/schemas/Address"

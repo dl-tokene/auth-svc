@@ -271,58 +271,6 @@
   },
   "components": {
     "schemas": {
-      "Address": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AddressKey"
-          },
-          {
-            "type": "object",
-            "required": [
-              "attributes"
-            ],
-            "properties": {
-              "attributes": {
-                "type": "object",
-                "required": [
-                  "address"
-                ],
-                "properties": {
-                  "address": {
-                    "type": "string",
-                    "example": "0x2a2288cdceEeb2CF60..."
-                  },
-                  "cpk_address": {
-                    "type": "string",
-                    "example": "0x2a2288cdceEeb2CF60..."
-                  },
-                  "label": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "AddressKey": {
-        "type": "object",
-        "required": [
-          "id",
-          "type"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "address"
-            ]
-          }
-        }
-      },
       "AuthNonce": {
         "allOf": [
           {
@@ -430,64 +378,6 @@
             "pattern": "^0x[0-9a-fA-F]+$",
             "example": "0x0bf7b3c454fedc179af06cd02f62fb3d89b2ac16962d50137330ffeebe9fac5f6bb2d1f2a971834a8eb84ce0a28894578286812a1131cfe7921b2d325d0b06041c",
             "description": "Backend-generated message, signed with MetaMask's private_sign"
-          }
-        }
-      },
-      "CPKAddress": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/CPKAddressKey"
-          },
-          {
-            "type": "object",
-            "required": [
-              "attributes"
-            ],
-            "properties": {
-              "attributes": {
-                "type": "object",
-                "required": [
-                  "address",
-                  "cpk_address",
-                  "user_id"
-                ],
-                "properties": {
-                  "address": {
-                    "type": "string",
-                    "example": "0x2a2288cdceEeb2CF60..."
-                  },
-                  "cpk_address": {
-                    "type": "string",
-                    "example": "0x5ac930AB930C..."
-                  },
-                  "user_id": {
-                    "type": "int64",
-                    "example": 83
-                  },
-                  "label": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "CPKAddressKey": {
-        "type": "object",
-        "required": [
-          "id",
-          "type"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "cpk_address"
-            ]
           }
         }
       },
@@ -2388,8 +2278,7 @@
                   "token_type",
                   "expires_in",
                   "refresh_expires_in",
-                  "user",
-                  "address"
+                  "user"
                 ],
                 "properties": {
                   "access_token": {
@@ -2417,9 +2306,6 @@
                   },
                   "user": {
                     "$ref": "#/components/schemas/User"
-                  },
-                  "address": {
-                    "$ref": "#/components/schemas/Address"
                   }
                 }
               }
@@ -2450,7 +2336,7 @@
       "User": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/UserKey"
+            "$ref": "#/components/schemas/AddressKey"
           },
           {
             "type": "object",
@@ -2461,22 +2347,12 @@
               "attributes": {
                 "type": "object",
                 "required": [
-                  "id",
-                  "smt_claims"
+                  "address"
                 ],
                 "properties": {
-                  "id": {
-                    "type": "int64",
-                    "example": 83,
-                    "description": "User ID"
-                  },
-                  "email": {
+                  "address": {
                     "type": "string",
-                    "example": "test@mail.com"
-                  },
-                  "smt_claims": {
-                    "type": "float64",
-                    "example": 10.20395
+                    "example": "0x2a2288cdceEeb2CF60..."
                   }
                 }
               }
@@ -2492,9 +2368,7 @@
         ],
         "properties": {
           "id": {
-            "type": "int64",
-            "description": "User ID",
-            "example": 83
+            "type": "string"
           },
           "type": {
             "type": "string",
