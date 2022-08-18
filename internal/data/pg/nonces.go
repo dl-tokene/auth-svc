@@ -87,6 +87,6 @@ func (q *nonceQ) FilterByAddress(addresses ...string) data.NonceQ {
 }
 
 func (q *nonceQ) FilterExpired() data.NonceQ {
-	q.sql = q.sql.Where("expiresAt < localtimestamp")
+	q.sql = q.sql.Where("expiresat < localtimestamp")
 	return q
 }

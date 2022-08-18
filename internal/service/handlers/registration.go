@@ -57,12 +57,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// success logic
 	var user *data.User
-	db.Transaction(func(db data.MasterQ) error {
-		user, err = db.Users().Insert(data.User{
-			Address: ethAddress,
-		})
-		return err
-	})
+	user, err = db.Users().Insert(data.User{Address: ethAddress})
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 
 	token, err := helpers.GenerateJWT(user, helpers.AuthTypeSession, helpers.ServiceConfig(r))
 	if err != nil {

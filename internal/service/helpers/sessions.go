@@ -116,9 +116,8 @@ func getSessionToken(authType string, r *http.Request) (string, error) {
 			return "", errors.New("invalid Authorization header")
 		}
 		return authHeaderSplit[1], nil
-	} else {
-		panic(errors.WithStack(errors.New("unexpected authentication type received")))
 	}
+	return "", errors.WithStack(errors.New("unexpected authentication type received"))
 }
 func Authenticate(authType string, r *http.Request) (int64, *jsonapi.ErrorObject, error) {
 	sessToken, err := getSessionToken(authType, r)

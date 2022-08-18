@@ -45,28 +45,16 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, errors.NotFound(fmt.Sprintf("User with id %d doesn't exist", userID)))
 		return
 	}
-	address, err := db.Users().FilterByUserID(userID).Get()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
-		return
-	}
-	if address == nil {
-		errorText := fmt.Sprintf("address doesn't exist for user with ID %d", userID)
-		logger.Error(errorText)
-		ape.RenderErr(w, errors.InternalError(errorText))
-		return
-	}
 
 	// success logic
-	token, err := helpers.GenerateJWT(address, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	token, err := helpers.GenerateJWT(user, helpers.AuthTypeSession, helpers.ServiceConfig(r))
 	if err != nil {
 		details := "failed to generate a token"
 		logger.WithError(err).Error(details)
 		ape.RenderErr(w, errors.InternalError(details))
 		return
 	}
-	refreshToken, err := helpers.GenerateRefreshToken(address, helpers.ServiceConfig(r))
+	refreshToken, err := helpers.GenerateRefreshToken(user, helpers.ServiceConfig(r))
 	if err != nil {
 		details := "failed to generate a refresh token"
 		logger.WithError(err).Error(details)
