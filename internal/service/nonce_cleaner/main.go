@@ -37,12 +37,9 @@ func (s nonceCleaner) Run(ctx context.Context) error {
 }
 
 func (s nonceCleaner) runNonceCleaner(ctx context.Context) error {
-	// filter must be applied only once
-
 	for {
 		s.q.FilterExpired()
 		s.q.Delete()
-		s.logger.Info("Cleaning")
 		time.Sleep(time.Second)
 	}
 }
