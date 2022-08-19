@@ -2,7 +2,6 @@ package pg
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -89,7 +88,6 @@ func (q *nonceQ) FilterByAddress(addresses ...string) data.NonceQ {
 }
 
 func (q *nonceQ) FilterExpired() data.NonceQ {
-	command := "nonce.expiresat at time zone 'UTC' < to_timestamp(" + fmt.Sprint(time.Now().UTC().Unix()) + ")"
-	q.sql = q.sql.Where(command)
+	q.sql = q.sql.Where("nonce.expiresat < ?", time.Now().UTC())
 	return q
 }

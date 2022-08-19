@@ -42,6 +42,7 @@ func (s nonceCleaner) runNonceCleaner(ctx context.Context) error {
 	for {
 		s.q.FilterExpired()
 		s.q.Delete()
+		s.logger.Info("Cleaning")
 		time.Sleep(time.Second)
 	}
 }
