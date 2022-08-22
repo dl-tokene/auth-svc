@@ -25,21 +25,21 @@ type nonceCleaner struct {
 }
 
 func (s nonceCleaner) Run(ctx context.Context) error {
-	running.WithBackOff(context.TODO(),
-		logan.New(),
+	running.WithBackOff(ctx,
+		s.logger,
 		"nonce-cleaner",
 		s.runNonceCleaner,
-		3*time.Second,
-		3*time.Second,
-		3*time.Second,
+		1*time.Second,
+		1*time.Second,
+		5*time.Second,
 	)
 	return nil
 }
 
 func (s nonceCleaner) runNonceCleaner(ctx context.Context) error {
-	for {
-		s.q.FilterExpired()
-		s.q.Delete()
-		time.Sleep(time.Second)
-	}
+	s.q.FilterExpired()
+	s.logger.Debug("Filtered expired nonces")
+	s.logger.Debug("Calling delete of expired nonces")
+	err := s.q.Delete()
+	return err
 }
