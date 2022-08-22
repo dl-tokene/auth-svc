@@ -2,14 +2,14 @@
 
 create table users (
     id bigserial primary key,
-    address CHAR(42)
+    address Bytea
 );
 
 create table nonce (
     id bigserial primary key,
     message text not null,
     expiresat timestamp without time zone not null,
-    address CHAR(42)
+    address Bytea
 );
 
 -- +migrate Down
