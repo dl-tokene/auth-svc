@@ -25,6 +25,7 @@ type nonceCleaner struct {
 }
 
 func (s nonceCleaner) Run(ctx context.Context) error {
+	s.logger.Debug("Calling delete of expired nonces")
 	running.WithBackOff(ctx,
 		s.logger,
 		"nonce-cleaner",
@@ -33,13 +34,11 @@ func (s nonceCleaner) Run(ctx context.Context) error {
 		1*time.Second,
 		5*time.Second,
 	)
+
 	return nil
 }
 
 func (s nonceCleaner) runNonceCleaner(ctx context.Context) error {
 	s.q.FilterExpired()
-	s.logger.Debug("Filtered expired nonces")
-	s.logger.Debug("Calling delete of expired nonces")
-	err := s.q.Delete()
-	return err
+	return s.q.Delete()
 }
