@@ -78,7 +78,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, errors.InternalError(details))
 		return
 	}
-
+	err = db.Nonce().FilterByAddress(ethAddress).Delete()
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
+		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		return
+	}
 	result := models.NewRegistrationModel(
 		token,
 		refreshToken,

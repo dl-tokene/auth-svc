@@ -30,11 +30,10 @@ func (s nonceCleaner) Run(ctx context.Context) error {
 		s.logger,
 		"nonce-cleaner",
 		s.runNonceCleaner,
-		1*time.Minute,
+		12*time.Hour,
 		1*time.Second,
 		5*time.Second,
 	)
-
 	return nil
 }
 
