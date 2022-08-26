@@ -30,7 +30,7 @@ func (s nonceCleaner) Run(ctx context.Context) error {
 		s.logger,
 		"nonce-cleaner",
 		s.runNonceCleaner,
-		1*time.Second,
+		1*time.Minute,
 		1*time.Second,
 		5*time.Second,
 	)
@@ -39,6 +39,6 @@ func (s nonceCleaner) Run(ctx context.Context) error {
 }
 
 func (s nonceCleaner) runNonceCleaner(ctx context.Context) error {
-	s.q.FilterExpired()
+	s.q.FilterExpired() //Clearing previous sql condition inside function
 	return s.q.Delete()
 }
