@@ -1,0 +1,1978 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: nonce-auth-svc
+  description: ''
+servers:
+  - url: 'https://api.demo.tokend.io'
+    description: TokenD Developer Environment
+paths:
+  /login:
+    post:
+      tags:
+        - User Authentication
+      summary: Login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/Login'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LoginError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /nonce:
+    post:
+      tags:
+        - User Authentication
+      summary: Get Auth Nonce Message
+      description: |-
+        Request a new nonce message here, sign it with metamask and use it to log in or register
+
+        Nonce message is issued per-address and expires quickly
+
+        Requesting a new nonce message overwrites the previous one and invalidates it
+      operationId: nonce
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  $ref: '#/components/schemas/AuthNonceRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuthNonce'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NonceError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /refresh_token:
+    post:
+      tags:
+        - User Authentication
+      summary: Refresh token endpoint
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/RefreshTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /register:
+    post:
+      tags:
+        - User Authentication
+      summary: Registration
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  $ref: '#/components/schemas/Register'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/Registration'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegistrationError'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    AuthNonce:
+      allOf:
+        - $ref: '#/components/schemas/AuthNonceKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: Authentication Message. 4efad2f9ec175291a8632582d845641b
+                  description: Message to be signed with MetaMask's `personal_sign`. Contains some user-friendly text and a random nonce.
+    AuthNonceKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - auth_nonce_message
+    AuthNonceRequest:
+      allOf:
+        - $ref: '#/components/schemas/AuthNonceRequestKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - address
+              properties:
+                address:
+                  type: string
+                  pattern: '^(0x)?[0-9a-fA-F]{40}$'
+                  example: 0x2a2288cdceEeb2CF60...
+                  description: Account Address from MetaMask.
+                terms_hash:
+                  type: string
+                  description: Optional hash of Terms of Service to be included in the nonce message.
+    AuthNonceRequestKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - auth_nonce_request
+    AuthPair:
+      type: object
+      required:
+        - address
+        - signed_message
+      properties:
+        address:
+          type: string
+          pattern: '^(0x)?[0-9a-fA-F]{40}$'
+          example: 0x2a2288cdceEeb2CF60...
+          description: Address that corresponds to users keypair
+        signed_message:
+          type: string
+          pattern: '^0x[0-9a-fA-F]+$'
+          example: '0x0bf7b3c454fedc179af06cd02f62fb3d89b2ac16962d50137330ffeebe9fac5f6bb2d1f2a971834a8eb84ce0a28894578286812a1131cfe7921b2d325d0b06041c'
+          description: 'Backend-generated message, signed with MetaMask''s private_sign'
+    BadRequestError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Your request was invalid in some way.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - bad_request
+            - bad_request_data
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to verify issuer: failed to create a request: invalid url'
+            error_info: Issuer check failed.
+    AcceptTermsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Signature Verification failed. The signature was invalid or addresses didn't match.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Signature Verification Codes:
+            * "signature_verification_failed"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'signature verification failed: failed to decode signature: bad signature length'
+            /data/attributes/auth_pair/signed_message: cannot be blank
+    AddAddressError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Signature Verification failed. The signature was invalid or addresses didn't match.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Signature Verification Codes:
+            * "nonce_not_found"
+            * "signature_verification_failed"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'signature verification failed: failed to decode signature: bad signature length'
+            /data/attributes/auth_pair/signed_message: cannot be blank
+    AddLogError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: User with id '547' doesn't exist. It is required in order to perform your operation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: resource_not_found
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Resource Dependency:
+            * "resource_not_found"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            /data/attributes/user_id: cannot be blank
+    AddPermissionsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    AddRoleError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Request body was expected.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: empty_body
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            /data/attributes/name: cannot be blank
+            /data/attributes/description: cannot be blank
+    ChangeUserRoleError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user ID: failed to parse ''asdf'' as int'
+    DeleteAddressError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: The specified address doesn't belong to the authenticated account.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: not_address_owner
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Unlink Address Codes:
+            * "not_address_owner"
+            * "active_address_deactivation"
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse address: address must be in valid format'
+    DeleteRoleError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    DeleteVerificationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: verification_not_pending
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Delete Verification Codes:
+            * "verification_deletion_not_supported"
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'Deletion of requests other than type:''manual'' with status:''pending_manual'' is not currently allowed'
+    EmailVerificationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: No email verification exists for email 'test@mail.com'. Please make sure the email is valid.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: resource_not_found
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Email Verification Codes:
+            * "invalid_email_verification"
+
+            Resource Dependency:
+            * "resource_not_found"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            /data/attributes/email: cannot be blank
+    GetAddressError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            /url/address: must be in valid format
+    GetAddressListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            'filter[user_id]': 'something wrong with field ''filter[user_id]'''
+            'page[number]': 'something wrong with field ''page[number]'''
+    GetKYBSessionsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            name: 'something wrong with field ''filter[status]'''
+    GetLogError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse log ID: failed to parse ''asdf'' as int'
+    GetLogListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            'filter[user_id]': 'something wrong with field ''filter[user_id]'''
+            'filter[type]': 'something wrong with field ''filter[type]'''
+            'filter[before]': 'something wrong with field ''filter[before]'''
+            'page[limit]': 'something wrong with field ''page[limit]'''
+    GetNftPermissionsListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+    GetRoleError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    GetRoleListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            name: 'something wrong with field ''filter[name]'''
+    GetSMTClaimsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user ID: failed to parse ''asdf'' as int'
+    GetUserdataError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user_id: failed to parse ''asdf'' as int'
+    GetUserError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user ID: failed to parse ''asdf'' as int'
+    GetUserListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            'filter[user_id]': 'something wrong with field ''filter[user_id]'''
+            'filter[email]': 'something wrong with field ''filter[email]'''
+            'filter[role]': 'something wrong with field ''filter[role]'''
+    GetVerificationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse verification ID: failed to parse ''asdf'' as int'
+    GetVerificationListError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            'filter[user_id]': 'something wrong with field ''filter[user_id]'''
+            'filter[type]': 'something wrong with field ''filter[type]'''
+            'filter[subtype]': 'something wrong with field ''filter[subtype]'''
+            'page[limit]': 'something wrong with field ''page[limit]'''
+    LoginError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Signature Verification failed. The signature was invalid or addresses didn't match.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Login Codes:
+            * "not_registered"
+
+            Signature Verification Codes:
+            * "nonce_not_found"
+            * "signature_verification_failed"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'signature verification failed: failed to decode signature: bad signature length'
+            /data/attributes/auth_pair/signed_message: cannot be blank
+    NonceError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            /data/attributes/address: cannot be blank
+    QuotesError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            'filter[base]': 'something wrong with field ''filter[base]'''
+            'filter[counter]': 'something wrong with field ''filter[counter]'''
+    RegistrationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Signature Verification failed. The signature was invalid or addresses didn't match.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: signature_verification_failed
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Signature Verification Codes:
+            * "nonce_not_found"
+            * "signature_verification_failed"
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'signature verification failed: failed to decode signature: bad signature length'
+            /data/attributes/auth_pair/signed_message: cannot be blank
+    ResendEmailVerificationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Userdata for user with id '596' doesn't exist. It is required in order to perform your operation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: resource_not_found
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Resource Dependency:
+            * "resource_not_found"
+    RevokePermissionsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    UpdateRoleError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    UpdateSMTClaimsError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user ID: failed to parse ''asdf'' as int'
+    UpdateUserdataError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse user ID: failed to parse ''asdf'' as int'
+    UpdateVerificationError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some data in the request was invalid. Please refer to the service documentation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: bad_request_data
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            General Request Codes:
+            * "empty_body"
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            error: 'failed to parse string: unsupported characters'
+    YesACCBError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Flowstate for user with ID '593' doesn't exist. It is required in order to perform your operation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: resource_not_found
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Resource Dependency:
+            * "resource_not_found"
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            issuer_url: something wrong with field 'issuer_url'
+            error: something wrong with field 'error'
+    YesOIDCCBError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Flowstate for user with ID '593' doesn't exist. It is required in order to perform your operation.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: resource_not_found
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Resource Dependency:
+            * "resource_not_found"
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            code: something wrong with field 'code'
+            issuer_url: something wrong with field 'issuer_url'
+    YotiCallbackError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Bad Request
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: User's personal information didn't match service's requirements. See `Meta` for more information.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 400
+        code:
+          type: string
+          example: failed_yoti_verification
+          description: |-
+            Application-specific error code, expressed as a string value
+
+            Yoti Specific Codes:
+            * "failed_yoti_exchange"
+            * "failed_yoti_verification"
+
+            Resource Dependency:
+            * "resource_not_found"
+
+            General Request Codes:
+            * "bad_request"
+            * "bad_request_data"
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+          example:
+            token: something wrong with field 'token'
+            full_name: cannot be blank
+            address: must be in valid format
+            email: must be in valid format
+            selfie: cannot be blank
+            error: 'failed to decode userdata: structure corrupted or incomplete'
+    ConflictError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Conflict
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: The resource you were trying to create either already exists or is known to the service.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 409
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - conflict
+    ForbiddenError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Forbidden
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: The requester lacks necessary permissions to perform the request or action.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 403
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - forbidden
+    MaticFaucetForbiddenError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Forbidden
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Address or account doesn't belong to the user.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 403
+        code:
+          type: string
+          example: address_not_owned
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - forbidden
+            - address_not_owned
+            - faucet_already_used
+        meta:
+          type: object
+          description: Object containing non-standard meta-information about the error
+    InternalError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Internal Error
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Some internal error occurred. Please report this error to service maintainers.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 500
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - internal_error
+    NotFoundError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Not Found
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: The requested resource could not be found.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 404
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - not_found
+    UnauthorizedError:
+      type: object
+      required:
+        - title
+        - status
+        - code
+      properties:
+        title:
+          type: string
+          description: 'Short, human-readable summary of the problem'
+          example: Unauthorized
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+          example: Session token is invalid. It either has expired or is corrupted. Please log in and obtain a new one.
+        status:
+          type: integer
+          description: HTTP status code applicable to this problem
+          enum:
+            - 401
+        code:
+          type: string
+          description: 'Application-specific error code, expressed as a string value'
+          enum:
+            - session_token_not_found
+            - session_token_invalid
+    Login:
+      allOf:
+        - $ref: '#/components/schemas/LoginKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - access_token
+                - refresh_token
+                - token_type
+                - expires_in
+                - refresh_expires_in
+              properties:
+                access_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
+                refresh_token:
+                  type: string
+                token_type:
+                  type: string
+                  enum:
+                    - JWT
+                expires_in:
+                  type: int64
+                  example: 300
+                  description: In seconds
+                refresh_expires_in:
+                  type: int64
+                  description: In hours
+    LoginKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - login
+    LoginRequest:
+      allOf:
+        - $ref: '#/components/schemas/LoginRequestKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - auth_pair
+              properties:
+                auth_pair:
+                  $ref: '#/components/schemas/AuthPair'
+    LoginRequestKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - login_request
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+    RefreshTokenResponse:
+      type: object
+      required:
+        - access_token
+        - refresh_token
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    Register:
+      allOf:
+        - $ref: '#/components/schemas/RegisterKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - auth_pair
+              properties:
+                auth_pair:
+                  $ref: '#/components/schemas/AuthPair'
+    RegisterKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - register
+    Registration:
+      allOf:
+        - $ref: '#/components/schemas/RegistrationKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - access_token
+                - refresh_token
+                - token_type
+                - expires_in
+                - refresh_expires_in
+                - user
+              properties:
+                access_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
+                refresh_token:
+                  type: string
+                token_type:
+                  type: string
+                  enum:
+                    - JWT
+                expires_in:
+                  type: int64
+                  example: 300
+                  description: In seconds
+                refresh_expires_in:
+                  type: int64
+                  example: 7
+                  description: In hours
+                user:
+                  $ref: '#/components/schemas/User'
+    RegistrationKey:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: int64
+          example: 83
+          description: User ID
+        type:
+          type: string
+          enum:
+            - registration
+    User:
+      allOf:
+        - $ref: '#/components/schemas/AddressKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - address
+              properties:
+                address:
+                  type: string
+                  example: 0x2a2288cdceEeb2CF60...
+    UserKey:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - user
+  parameters:
+    pageLimitParam:
+      in: query
+      name: 'page[limit]'
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 15
+        description: Numbers of items per page to return.
+    pageNumberParam:
+      in: query
+      name: 'page[number]'
+      required: false
+      schema:
+        type: integer
+      description: The number of a page to return.
+    sortingParam:
+      in: query
+      name: 'page[order]'
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+        description: 'Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID.'

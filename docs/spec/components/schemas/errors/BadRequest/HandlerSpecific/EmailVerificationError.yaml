@@ -1,0 +1,40 @@
+type: object
+required:
+  - title
+  - status
+  - code
+properties:
+  title:
+    type: string
+    description: "Short, human-readable summary of the problem"
+    example: "Bad Request"
+  detail:
+    type: string
+    description: "Human-readable explanation specific to this occurrence of the problem"
+    example: "No email verification exists for email 'test@mail.com'. Please make sure the email is valid."
+  status:
+    type: integer
+    description: "HTTP status code applicable to this problem"
+    enum:
+      - 400
+  code:
+    type: string
+    example: "resource_not_found"
+    description: |-
+      Application-specific error code, expressed as a string value
+
+      Email Verification Codes:
+      * "invalid_email_verification"
+
+      Resource Dependency:
+      * "resource_not_found"
+
+      General Request Codes:
+      * "empty_body"
+      * "bad_request"
+      * "bad_request_data"
+  meta:
+    type: object
+    description: "Object containing non-standard meta-information about the error"
+    example:
+      /data/attributes/email: cannot be blank

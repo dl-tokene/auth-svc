@@ -1,0 +1,25 @@
+type: object
+required:
+  - title
+  - status
+  - code
+properties:
+  title:
+    type: string
+    description: "Short, human-readable summary of the problem"
+    example: "Unauthorized"
+  detail:
+    type: string
+    description: "Human-readable explanation specific to this occurrence of the problem"
+    example: "Session token is invalid. It either has expired or is corrupted. Please log in and obtain a new one."
+  status:
+    type: integer
+    description: "HTTP status code applicable to this problem"
+    enum:
+      - 401
+  code:
+    type: string
+    description: "Application-specific error code, expressed as a string value"
+    enum:
+      - "session_token_not_found"
+      - "session_token_invalid"

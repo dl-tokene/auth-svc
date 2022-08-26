@@ -1,0 +1,35 @@
+allOf:
+  - $ref: '#/components/schemas/RegistrationKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - access_token
+          - refresh_token
+          - token_type
+          - expires_in
+          - refresh_expires_in
+          - user
+        properties:
+          access_token:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi..."
+          refresh_token:
+            type: string
+          token_type:
+            type: string
+            enum:
+              - "JWT"
+          expires_in:
+            type: int64
+            example: 300
+            description: In seconds
+          refresh_expires_in:
+            type: int64
+            example: 7
+            description: In hours
+          user:
+            $ref: "#/components/schemas/User"
