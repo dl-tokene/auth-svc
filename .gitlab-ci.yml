@@ -1,0 +1,13 @@
+image: node:latest
+
+pages:
+  stage: deploy
+  script:
+  - npm install -g redoc-cli
+  - redoc-cli build -o public/index.html docs/web_deploy/openapi.yaml
+  artifacts:
+    paths:
+    - public
+  only:
+  - main
+  - fix/gitlab-pages
