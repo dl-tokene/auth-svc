@@ -1,20 +1,12 @@
 image: node:latest
 
 pages:
-  image: node:8
   stage: deploy
-  tags:
-  - tokene
-  only:
-    refs:
-    - fix/gitlab-pages
-    changes:
-    - docs/**/*
   script:
-  - cd docs
-  - npm install
-  - mkdir -p ../public
-  - npm run release-build
+  - npm install -g redoc-cli
+  - redoc-cli bundle -o public/index.html docs/web_deploy/openapi.yaml
   artifacts:
     paths:
     - public
+  only:
+  - fix/gitlab-pages
