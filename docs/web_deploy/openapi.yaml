@@ -7,6 +7,49 @@ servers:
   - url: 'https://api.demo.tokend.io'
     description: TokenD Developer Environment
 paths:
+  /admin_login:
+    post:
+      tags:
+        - Admin Authentication
+      summary: Login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/AdminLogin'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LoginError'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /login:
     post:
       tags:
@@ -174,6 +217,61 @@ paths:
           $ref: '#/components/responses/InternalError'
 components:
   schemas:
+    AdminLogin:
+      allOf:
+        - $ref: '#/components/schemas/AdminLoginKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - access_token
+                - refresh_token
+                - token_type
+                - expires_in
+                - refresh_expires_in
+              properties:
+                access_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
+                refresh_token:
+                  type: string
+                token_type:
+                  type: string
+                  enum:
+                    - JWT
+                expires_in:
+                  type: int64
+                  example: 300
+                  description: In seconds
+                refresh_expires_in:
+                  type: int64
+                  description: In hours
+    AdminLoginKey:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - admin_login
+    AdminLoginRequest:
+      allOf:
+        - $ref: '#/components/schemas/AdminLoginKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - auth_pair
+              properties:
+                auth_pair:
+                  $ref: '#/components/schemas/AuthPair'
     AuthNonce:
       allOf:
         - $ref: '#/components/schemas/AuthNonceKey'
@@ -1922,7 +2020,7 @@ components:
             - registration
     User:
       allOf:
-        - $ref: '#/components/schemas/AddressKey'
+        - $ref: '#/components/schemas/UserKey'
         - type: object
           required:
             - attributes
