@@ -258,9 +258,18 @@ components:
           type: string
           enum:
             - admin_login
+    AdminLoginKeyRequest:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - admin_login_request
     AdminLoginRequest:
       allOf:
-        - $ref: '#/components/schemas/AdminLoginKey'
+        - $ref: '#/components/schemas/AdminLoginRequest'
         - type: object
           required:
             - attributes
