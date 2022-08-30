@@ -4,9 +4,10 @@ pages:
   stage: deploy
   script:
   - npm install -g redoc-cli
-  - redoc-cli bundle -o public/index.html docs/web_deploy/openapi.yaml
+  - redoc-cli build -o public/index.html docs/web_deploy/openapi.yaml
   artifacts:
     paths:
     - public
   only:
   - main
+  - fix/gitlab-pages
