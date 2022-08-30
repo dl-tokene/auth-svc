@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
+	"gitlab.com/tokene/gosdk"
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data/pg"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/handlers"
@@ -19,6 +20,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 			helpers.CtxLog(s.log),
 			helpers.CtxDB(pg.NewMasterQ(cfg.DB())),
 			helpers.CtxServiceConfig(cfg.ServiceConfig()),
+			helpers.CtxNodeAdmins(gosdk.NewNodeAdmins()),
 		),
 	)
 	r.Route("/integrations/nonce-auth-svc", func(r chi.Router) {
@@ -26,6 +28,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 		r.Post("/register", handlers.Register)
 		r.Post("/refresh_token", handlers.RefreshToken)
 		r.Post("/login", handlers.Login)
+		r.Get("/admin_login", handlers.AdminLogin)
 	})
 
 	return r

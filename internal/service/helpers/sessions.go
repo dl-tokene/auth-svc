@@ -22,9 +22,17 @@ type standardClaims struct {
 	Purpose     string `json:"purpose"`
 	jwt.StandardClaims
 }
-
 type refreshTokenClaims struct {
 	UserID int64 `json:"user_id"`
+	jwt.StandardClaims
+}
+type adminClaims struct {
+	AdminAddress string `json:"admin_address"`
+	Purpose      string `json:"purpose"`
+	jwt.StandardClaims
+}
+type refreshAdminTokenClaims struct {
+	AdminAddress string `json:"admin_address"`
 	jwt.StandardClaims
 }
 
@@ -45,7 +53,6 @@ func GenerateJWT(user *data.User, purpose string, cfg *config.ServiceConfig) (st
 	}
 	return tokenString, nil
 }
-
 func GenerateRefreshToken(user *data.User, cfg *config.ServiceConfig) (string, error) {
 	expirationTime := time.Now().Add(cfg.RefreshTokenExpireTime)
 	claims := refreshTokenClaims{
@@ -61,7 +68,37 @@ func GenerateRefreshToken(user *data.User, cfg *config.ServiceConfig) (string, e
 	}
 	return refreshTokenString, nil
 }
-
+func GenerateAdminJWT(address, purpose string, cfg *config.ServiceConfig) (string, error) {
+	expirationTime := time.Now().Add(cfg.TokenExpireTime)
+	claims := &adminClaims{
+		AdminAddress: address,
+		Purpose:      purpose,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(cfg.TokenKey))
+	if err != nil {
+		return "", errors.Wrap(err, "failed to generate JWT")
+	}
+	return tokenString, nil
+}
+func GenerateAdminRefreshToken(address string, cfg *config.ServiceConfig) (string, error) {
+	expirationTime := time.Now().Add(cfg.RefreshTokenExpireTime)
+	claims := refreshAdminTokenClaims{
+		AdminAddress: address,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	refreshTokenString, err := refreshToken.SignedString([]byte(cfg.TokenKey))
+	if err != nil {
+		return "", errors.Wrap(err, "failed to generate refresh token")
+	}
+	return refreshTokenString, nil
+}
 func parseStandardJWT(tokenString string, r *http.Request) (*standardClaims, error) {
 	claims := &standardClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

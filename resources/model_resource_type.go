@@ -8,6 +8,7 @@ type ResourceType string
 
 // List of ResourceType
 const (
+	ADMIN_LOGIN        ResourceType = "admin_login"
 	AUTH_NONCE_MESSAGE ResourceType = "auth_nonce_message"
 	AUTH_NONCE_REQUEST ResourceType = "auth_nonce_request"
 	LOGIN              ResourceType = "login"

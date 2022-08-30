@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/distributed_lab/logan/v3"
+	gosdk "gitlab.com/tokene/gosdk"
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
 )
@@ -14,6 +15,7 @@ type ctxKey int
 const (
 	logCtxKey ctxKey = iota
 	dbCtxKey
+	nodeAdminsCtxKey
 	serviceConfigCtxKey
 )
 
@@ -39,7 +41,14 @@ func CtxServiceConfig(entry *config.ServiceConfig) func(context.Context) context
 		return context.WithValue(ctx, serviceConfigCtxKey, entry)
 	}
 }
-
+func CtxNodeAdmins(entry gosdk.NodeAdminsI) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, nodeAdminsCtxKey, entry)
+	}
+}
+func NodeAdmins(r *http.Request) gosdk.NodeAdminsI {
+	return r.Context().Value(nodeAdminsCtxKey).(gosdk.NodeAdminsI).New()
+}
 func ServiceConfig(r *http.Request) *config.ServiceConfig {
 	return r.Context().Value(serviceConfigCtxKey).(*config.ServiceConfig)
 }
