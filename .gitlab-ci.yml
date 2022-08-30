@@ -1,10 +1,8 @@
 image: node:latest
-stages:
-- pages
 
 pages:
   image: node:8
-  stage: pages
+  stage: deploy
   tags:
   - tokene
   only:
