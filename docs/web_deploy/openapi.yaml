@@ -1922,7 +1922,7 @@ components:
             - registration
     User:
       allOf:
-        - $ref: '#/components/schemas/AddressKey'
+        - $ref: '#/components/schemas/UserKey'
         - type: object
           required:
             - attributes
