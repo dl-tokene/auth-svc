@@ -71,7 +71,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ape.Render(w, models.NewLoginModel(
+	ape.Render(w, models.NewAdminLoginModel(
 		token,
 		refreshToken,
 		helpers.ServiceConfig(r).TokenExpireTime,

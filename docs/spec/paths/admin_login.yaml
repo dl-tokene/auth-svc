@@ -1,8 +1,8 @@
 post:
   tags:
     - Admin Authentication
-  summary: Login
-  operationId: login
+  summary: AdminLogin
+  operationId: adminlogin
   requestBody:
     content:
       application/json:
