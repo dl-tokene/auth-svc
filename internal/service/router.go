@@ -20,7 +20,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 			helpers.CtxLog(s.log),
 			helpers.CtxDB(pg.NewMasterQ(cfg.DB())),
 			helpers.CtxServiceConfig(cfg.ServiceConfig()),
-			helpers.CtxNodeAdmins(gosdk.NewNodeAdmins()),
+			helpers.CtxNodeAdmins(gosdk.NewNodeAdminsMock()), //TODO change when admin's smart contracts ready
 		),
 	)
 	r.Route("/integrations/nonce-auth-svc", func(r chi.Router) {
