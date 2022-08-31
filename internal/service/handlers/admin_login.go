@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strings"
 
 	"gitlab.com/distributed_lab/ape"
 	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
@@ -43,7 +42,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !nodeAdmins.CheckAdmin(strings.ToLower(ethAddress)) {
+	if !nodeAdmins.CheckAdmin(ethAddress) {
 		logger.Debug("not admin's address")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeUnauthorized))
 		return
