@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/distributed_lab/logan/v3"
-	gosdk "gitlab.com/tokene/gosdk"
+	gosdk "gitlab.com/tokene/go-sdk"
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
 )

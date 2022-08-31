@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/ethereum/go-ethereum/common"
 	"gitlab.com/distributed_lab/ape"
 	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
@@ -42,7 +43,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !nodeAdmins.CheckAdmin(ethAddress) {
+	if !nodeAdmins.CheckAdmin(common.HexToAddress(ethAddress)) {
 		logger.Debug("not admin's address")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeUnauthorized))
 		return
