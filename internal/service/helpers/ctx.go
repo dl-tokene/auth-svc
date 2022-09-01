@@ -47,7 +47,7 @@ func CtxNodeAdmins(entry gosdk.NodeAdminsI) func(context.Context) context.Contex
 	}
 }
 func NodeAdmins(r *http.Request) gosdk.NodeAdminsI {
-	return r.Context().Value(nodeAdminsCtxKey).(gosdk.NodeAdminsI).New()
+	return r.Context().Value(nodeAdminsCtxKey).(gosdk.NodeAdminsI)
 }
 func ServiceConfig(r *http.Request) *config.ServiceConfig {
 	return r.Context().Value(serviceConfigCtxKey).(*config.ServiceConfig)
