@@ -29,7 +29,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 		r.Post("/register", handlers.Register)
 		r.Post("/refresh_token", handlers.RefreshToken)
 		r.Post("/login", handlers.Login)
-		r.Get("/admin_login", handlers.AdminLogin)
+		r.Post("/admin_login", handlers.AdminLogin)
 	})
 
 	return r
