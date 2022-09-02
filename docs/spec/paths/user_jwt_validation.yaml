@@ -1,0 +1,28 @@
+get:
+  tags:
+    - User Authentication
+  summary: Validate user token
+  operationId: accessToken
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          $ref: '#/components/schemas/UserValidationRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/UserValidationResponse'
+    '400':
+      $ref: "#/components/responses/BadRequest"
+    '401':
+      $ref: "#/components/responses/Unauthorized"
+    '500':
+      $ref: "#/components/responses/InternalError"

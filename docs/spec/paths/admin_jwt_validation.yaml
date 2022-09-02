@@ -1,0 +1,28 @@
+get:
+  tags:
+    - Admin Authentication
+  summary: Validate admin token
+  operationId: accessToken
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          $ref: '#/components/schemas/AdminValidationRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/AdminValidationResponse'
+    '400':
+      $ref: "#/components/responses/BadRequest"
+    '401':
+      $ref: "#/components/responses/Unauthorized"
+    '500':
+      $ref: "#/components/responses/InternalError"
