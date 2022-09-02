@@ -1,0 +1,13 @@
+allOf:
+  - $ref: '#/components/schemas/AdminLoginRequest'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - auth_pair
+        properties:
+          auth_pair:
+            $ref: '#/components/schemas/AuthPair'

@@ -1,0 +1,42 @@
+post:
+  tags:
+    - Admin Authentication
+  summary: AdminLogin
+  operationId: adminlogin
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              type: object
+              $ref: '#/components/schemas/AdminLoginRequest'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/AdminLogin'
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errors
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoginError"
+    '500':
+      $ref: "#/components/responses/InternalError"
