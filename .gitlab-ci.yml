@@ -24,7 +24,6 @@ build:
     - docker push $CONTAINER_TEST_IMAGE
   only:
   - main
-  - feature/docker-image
 
 pages:
   stage: deploy
