@@ -8,7 +8,6 @@ stages:
   - deploy
 
 variables:
-   # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
@@ -21,8 +20,7 @@ build:
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
-  - main
-  - feature/docker-image
+  - tags
 
 pages:
   stage: deploy
