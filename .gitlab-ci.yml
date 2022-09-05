@@ -1,5 +1,6 @@
 image: node:latest
 image: docker:20.10.16
+image: golang:1.18
 services:
   - docker:20.10.16-dind
 
@@ -12,15 +13,21 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
+before_script:
+  - git config --gloabl url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".instedOf https://gitlab.com/
+  - go env -W GOPRIVATE=gitlab.com/${CI_PROJECT_NAMESPACE}
 
 build:
   stage: build
   script:
+    - go mod init
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
   - tags
+  except:
+  - /^(?!main).+@/ 
 
 pages:
   stage: deploy
