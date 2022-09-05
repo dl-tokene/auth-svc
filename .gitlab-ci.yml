@@ -1,7 +1,17 @@
 image: node:latest
 image: docker:20.10.16
+image: golang:1.18
+
 services:
   - docker:20.10.16-dind
+
+cache:
+  paths:
+    - /apt-cache
+    - /go/src/github.com
+    - /go/src/golang.org
+    - /go/src/google.golang.org
+    - /go/src/gopkg.in
 
 stages:
   - build
@@ -20,6 +30,7 @@ before_script:
 build:
   stage: build
   script:
+    - go mod vendor
     - docker build --pull -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
   only:
