@@ -10,7 +10,8 @@ stages:
 variables:
    # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
   DOCKER_HOST: tcp://docker:2376
-  CONTAINER_COMMIT_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  DOCKER_TLS_CERTDIR: ""
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -18,10 +19,10 @@ before_script:
 build:
   stage: build
   script:
-    - docker build --pull -t $CONTAINER_COMMIT_IMAGE .
-    - docker push $CONTAINER_COMMIT_IMAGE
+    - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
+    - docker push $CONTAINER_RELEASE_IMAGE
   only:
-  - tags
+  - main
   - feature/docker-image
 
 pages:
@@ -33,4 +34,4 @@ pages:
     paths:
     - public
   only:
-    - main
+  - main
