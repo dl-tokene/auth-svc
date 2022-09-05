@@ -37,4 +37,5 @@ pages:
     paths:
     - public
   only:
+  - fix/pages
   - main
