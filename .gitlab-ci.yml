@@ -7,7 +7,7 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 before_script:
   - apk update && apk add git
@@ -24,7 +24,9 @@ build:
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
-    - feature/docker-image
+    - tags
+  except:
+    - /^(?!main).+@/ 
 
 pages:
   image: node:latest
