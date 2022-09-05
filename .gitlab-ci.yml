@@ -15,7 +15,7 @@ variables:
 
 before_script:
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".instedOf https://gitlab.com/
-  - go env -W GOPRIVATE=gitlab.com/${CI_PROJECT_NAMESPACE}
+  - go env -w GOPRIVATE=gitlab.com/${CI_PROJECT_NAMESPACE}
 
 build:
   stage: build
