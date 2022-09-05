@@ -1,17 +1,19 @@
+image: node:latest
 image: docker:20.10.16
 image: golang:1.18
 services:
   - docker:20.10.16-dind
+
 stages:
   - build
   - deploy
 
 variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 before_script:
-  image: golang:1.18
-  - apk update && apk add git
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf https://gitlab.com/
   - go env -w GOPRIVATE=gitlab.com/${CI_PROJECT_NAMESPACE}
   - go mod vendor
@@ -19,10 +21,9 @@ before_script:
 build:
   image: docker:20.10.16
   services:
-  - docker:20.10.16-dind
+    - docker:20.10.16-dind
   stage: build
   script:
-
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
@@ -30,7 +31,6 @@ build:
     - feature/docker-image
 
 pages:
-  image: node:latest
   stage: deploy
   script:
   - npm install -g redoc-cli
