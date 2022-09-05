@@ -336,52 +336,6 @@
           }
         }
       }
-    },
-    "/user_jwt_validation": {
-      "post": {
-        "tags": [
-          "User Authentication"
-        ],
-        "summary": "Validate user token",
-        "operationId": "accessToken",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/UserValidationRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/UserValidationResponse"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -2595,28 +2549,6 @@
             ]
           }
         }
-      },
-      "UserValidationRequest": {
-        "type": "object",
-        "required": [
-          "access_token"
-        ],
-        "properties": {
-          "access_token": {
-            "type": "string"
-          }
-        }
-      },
-      "UserValidationResponse": {
-        "type": "object",
-        "required": [
-          "address"
-        ],
-        "properties": {
-          "address": {
-            "type": "string"
-          }
-        }
       }
     },
     "responses": {
@@ -2633,7 +2565,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/BadRequest/BadRequestError"
+                    "$ref": "#/components/schemas/BadRequestError"
                   }
                 }
               }
@@ -2654,7 +2586,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/ConflictError"
+                    "$ref": "#/components/schemas/ConflictError"
                   }
                 }
               }
@@ -2675,7 +2607,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/Forbidden/ForbiddenError"
+                    "$ref": "#/components/schemas/ForbiddenError"
                   }
                 }
               }
@@ -2696,7 +2628,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/InternalError"
+                    "$ref": "#/components/schemas/InternalError"
                   }
                 }
               }
@@ -2717,7 +2649,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/NotFoundError"
+                    "$ref": "#/components/schemas/NotFoundError"
                   }
                 }
               }
@@ -2738,7 +2670,7 @@
                 "errors": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/errors/UnauthorizedError"
+                    "$ref": "#/components/schemas/UnauthorizedError"
                   }
                 }
               }
