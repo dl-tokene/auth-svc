@@ -1,7 +1,7 @@
 image: node:latest
-image: docker:20.10.16
+image: docker:19.03
 services:
-  - docker:20.10.16-dind
+  - docker:19.03-dind
 
 stages:
   - build
@@ -10,7 +10,7 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://docker:2376
+  DOCKER_HOST: tcp://localhost:2375
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
