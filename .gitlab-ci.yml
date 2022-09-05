@@ -26,7 +26,8 @@ build:
   only:
     - tags
   except:
-    - /^(?!main).+@/ 
+    - branches
+
 
 pages:
   image: node:latest
