@@ -25,9 +25,7 @@ build:
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
-  - tags
-  except:
-  - /^(?!main).+@/ 
+    - feature/docker-image
 
 pages:
   stage: deploy
