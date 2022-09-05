@@ -14,7 +14,7 @@ variables:
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 before_script:
-  - git config --gloabl url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".instedOf https://gitlab.com/
+  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".instedOf https://gitlab.com/
   - go env -W GOPRIVATE=gitlab.com/${CI_PROJECT_NAMESPACE}
 
 build:
