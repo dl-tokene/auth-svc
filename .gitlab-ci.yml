@@ -1,6 +1,7 @@
 image: docker:20.10.16
 image: golang:1.18
-
+services:
+  - docker:20.10.16-dind
 stages:
   - build
   - deploy
