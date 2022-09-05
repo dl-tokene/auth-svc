@@ -1,16 +1,16 @@
 image: node:latest
-image: docker:19.03
+image: docker:20.10.16
 services:
-  - docker:19.03-dind
+  - docker:20.10.16-dind
 
 stages:
   - build
-  - test
-  - release
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://localhost:2375
+   # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
