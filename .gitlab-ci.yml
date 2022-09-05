@@ -21,7 +21,10 @@ build:
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
-  - fix/pages
+    - tags
+  except:
+    - branches
+
 
 pages:
   image: node:latest
@@ -33,5 +36,4 @@ pages:
     paths:
     - public
   only:
-  - fix/pages
   - main
