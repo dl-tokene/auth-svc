@@ -21,11 +21,7 @@ build:
     - docker build --pull -t "$CONTAINER_RELEASE_IMAGE" .
     - docker push "$CONTAINER_RELEASE_IMAGE"
   only:
-    - tags
     - fix/docker-build
-  except:
-    - branches
-
 
 pages:
   image: node:latest
