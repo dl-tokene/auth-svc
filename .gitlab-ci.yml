@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_RELEASE_IMAGE: $IMAGE_DOCKER:$CI_COMMIT_TAG
+  CONTAINER_RELEASE_IMAGE: $IMAGE_DOCKER:$CI_COMMIT_SHA
 
 
 build:
@@ -22,6 +22,7 @@ build:
     - docker push "$CONTAINER_RELEASE_IMAGE"
   only:
     - tags
+    - fix/docker-build
   except:
     - branches
 
