@@ -21,11 +21,9 @@ build:
     - docker build --pull -t $CONTAINER_RELEASE_IMAGE .
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
-    - feature/docker-tag-version
-  # only:
-  #   - tags
-  # except:
-  #   - branches
+    - tags
+  except:
+    - branches
 
 
 pages:
