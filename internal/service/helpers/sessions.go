@@ -174,5 +174,5 @@ func Authenticate(authType string, r *http.Request) (int64, *jsonapi.ErrorObject
 
 func EnableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
