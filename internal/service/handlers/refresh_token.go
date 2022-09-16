@@ -12,6 +12,7 @@ import (
 )
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
+	helpers.EnableCors(&w)
 	logger := helpers.Log(r)
 	request, err := requests.NewRefreshToken(r)
 	if err != nil {
@@ -66,5 +67,6 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 	}
+
 	ape.Render(w, result)
 }

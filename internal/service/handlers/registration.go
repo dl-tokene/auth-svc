@@ -12,6 +12,7 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
+	helpers.EnableCors(&w)
 	logger := helpers.Log(r)
 	request, err := requests.NewRegistrationRequest(r)
 	if err != nil {

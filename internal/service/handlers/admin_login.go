@@ -12,6 +12,7 @@ import (
 )
 
 func AdminLogin(w http.ResponseWriter, r *http.Request) {
+	helpers.EnableCors(&w)
 	logger := helpers.Log(r)
 	request, err := requests.NewAdminLoginRequest(r)
 	if err != nil {
