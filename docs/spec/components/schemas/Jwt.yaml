@@ -1,0 +1,15 @@
+allOf:
+  - $ref: "#/components/schemas/JwtKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        required:
+          - expires_in
+        type: object
+        properties:
+          expires_in:
+            type: int64
+            example: 3000
+        

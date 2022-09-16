@@ -1,0 +1,19 @@
+allOf:
+  - $ref: "#/components/schemas/JwtPairKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - refresh_token
+          - session_token
+        properties:
+          refresh_token:
+            type: object
+            $ref: "#/components/schemas/Jwt"
+          session_token:
+            type: object
+            $ref: "#/components/schemas/Jwt"
+        

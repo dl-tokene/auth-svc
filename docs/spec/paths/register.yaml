@@ -24,7 +24,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/Registration'
+                $ref: '#/components/schemas/JwtPair'
     '400':
       description: Bad Request
       content:

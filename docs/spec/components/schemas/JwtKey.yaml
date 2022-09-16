@@ -1,11 +1,13 @@
 type: object
 required:
-  - id
   - type
+  - id
 properties:
   id:
     type: string
+    description: token
   type:
     type: string
     enum:
-      - user
+      - refresh_jwt
+      - session_jwt
