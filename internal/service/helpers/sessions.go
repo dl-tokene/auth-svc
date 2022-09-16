@@ -7,10 +7,10 @@ import (
 
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/jsonapi"
+	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
@@ -159,13 +159,13 @@ func getSessionToken(authType string, r *http.Request) (string, error) {
 func Authenticate(authType string, r *http.Request) (int64, *jsonapi.ErrorObject, error) {
 	sessToken, err := getSessionToken(authType, r)
 	if err != nil {
-		apierr := apierrors.Unauthorized(apierrors.CodeSessionTokenNotFound)
+		apierr := problems.Unauthorized()
 		err = errors.Wrap(err, "session token not found")
 		return 0, apierr, err
 	}
 	claims, err := parseStandardJWT(sessToken, r)
 	if err != nil {
-		apierr := apierrors.Unauthorized(apierrors.CodeSessionTokenInvalid)
+		apierr := problems.Unauthorized()
 		err = errors.Wrap(err, "failed to parse jwt token")
 		return 0, apierr, err
 	}

@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"gitlab.com/distributed_lab/ape"
-	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
+	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 	"gitlab.com/tokene/nonce-auth-svc/resources"
@@ -16,7 +16,7 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewRefreshToken(r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to parse request")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 	db := helpers.DB(r)
@@ -24,25 +24,25 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	userID, apiErr, err := helpers.Authenticate(helpers.AuthTypeSession, r)
 	if apiErr != nil || err != nil {
 		logger.WithError(err).Debug("failed authentication")
-		ape.RenderErr(w, apiErr)
+		ape.RenderErr(w, problems.BadRequest(errors.New("failed authentication"))...)
 		return
 	}
 
 	userID, err = helpers.RetrieveRefreshToken(request.RefreshToken, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to retrieve refresh token")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
 	user, err := db.Users().FilterByUserID(userID).Get()
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 	if user == nil {
-		ape.RenderErr(w, errors.NotFound(fmt.Sprintf("User with id %d doesn't exist", userID)))
+		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 
@@ -51,14 +51,14 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		details := "failed to generate a token"
 		logger.WithError(err).Error(details)
-		ape.RenderErr(w, errors.InternalError(details))
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 	refreshToken, err := helpers.GenerateRefreshToken(user, helpers.ServiceConfig(r))
 	if err != nil {
 		details := "failed to generate a refresh token"
 		logger.WithError(err).Error(details)
-		ape.Render(w, errors.InternalError(details))
+		ape.Render(w, problems.InternalError())
 		return
 	}
 

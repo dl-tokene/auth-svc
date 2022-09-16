@@ -6,8 +6,8 @@ import (
 
 	nonces "github.com/LarryBattle/nonce-golang"
 	"gitlab.com/distributed_lab/ape"
+	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
-	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
@@ -19,7 +19,7 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewNonceRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 	address := request.Data.Attributes.Address
@@ -46,13 +46,13 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	err = db.Nonce().FilterByAddress(address).Delete()
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 	_, err = db.Nonce().Insert(nonce)
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
