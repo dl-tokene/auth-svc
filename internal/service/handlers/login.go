@@ -11,7 +11,6 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	helpers.EnableCors(&w)
 	logger := helpers.Log(r)
 	request, err := requests.NewLoginRequest(r)
 	if err != nil {

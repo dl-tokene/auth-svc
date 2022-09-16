@@ -171,7 +171,3 @@ func Authenticate(authType string, r *http.Request) (int64, *jsonapi.ErrorObject
 	}
 	return claims.UserID, nil, nil
 }
-
-func EnableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}

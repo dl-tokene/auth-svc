@@ -15,7 +15,6 @@ import (
 )
 
 func GetNonce(w http.ResponseWriter, r *http.Request) {
-	helpers.EnableCors(&w)
 	logger := helpers.Log(r)
 	request, err := requests.NewNonceRequest(r)
 	if err != nil {
