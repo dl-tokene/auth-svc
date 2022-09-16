@@ -7,7 +7,6 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
 
@@ -54,16 +53,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// success logic
-	token, err := helpers.GenerateJWT(address, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	doorman := helpers.DoormanConnector(r)
+	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
-		logger.WithError(err).Error("failed to generate a token")
+		logger.WithError(err).Error("failed to generate jwt")
 		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	refreshToken, err := helpers.GenerateRefreshToken(address, helpers.ServiceConfig(r))
-	if err != nil {
-		logger.WithError(err).Error("failed to generate a refresh token")
-		ape.Render(w, problems.InternalError())
 		return
 	}
 
@@ -74,9 +68,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ape.Render(w, models.NewLoginModel(
-		token,
-		refreshToken,
-		helpers.ServiceConfig(r).TokenExpireTime,
-		helpers.ServiceConfig(r).RefreshTokenExpireTime))
+	ape.Render(w, pair)
 }

@@ -23,6 +23,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 			helpers.CtxDB(pg.NewMasterQ(cfg.DB())),
 			helpers.CtxServiceConfig(cfg.ServiceConfig()),
 			helpers.CtxNodeAdmins(gosdk.NewNodeAdminsMock(common.HexToAddress("0x750Bd531CEA1f68418DDF2373193CfbD86A69058"))), //TODO change when admin's smart contracts ready
+			helpers.CtxDoormanConnector(cfg.DormanConnector()),
 		),
 		cors.Handler(cors.Options{
 			AllowedOrigins: []string{"*"},

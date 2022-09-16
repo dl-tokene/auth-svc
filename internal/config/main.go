@@ -14,6 +14,7 @@ type Config interface {
 	types.Copuser
 	ServiceConfiger
 	comfig.Listenerer
+	DoormanConfiger
 }
 
 type config struct {
@@ -23,6 +24,7 @@ type config struct {
 	comfig.Listenerer
 	getter kv.Getter
 	ServiceConfiger
+	DoormanConfiger
 }
 
 func New(getter kv.Getter) Config {
@@ -33,5 +35,6 @@ func New(getter kv.Getter) Config {
 		Listenerer:      comfig.NewListenerer(getter),
 		Logger:          comfig.NewLogger(getter, comfig.LoggerOpts{}),
 		ServiceConfiger: NewServiceConfiger(getter),
+		DoormanConfiger: NewDoormanConfiger(getter),
 	}
 }

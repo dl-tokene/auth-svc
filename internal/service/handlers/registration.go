@@ -7,7 +7,6 @@ import (
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
 
@@ -51,28 +50,22 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	err = helpers.VerifySignature(helpers.NonceToHash(nonce), signature, ethAddress)
 	if err != nil {
 		logger.WithError(err).Debug("signature verification failed")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 
 	// success logic
-	var user *data.User
-	user, err = db.Users().Insert(data.User{Address: ethAddress})
+	_, err = db.Users().Insert(data.User{Address: ethAddress})
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	token, err := helpers.GenerateJWT(user, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	doorman := helpers.DoormanConnector(r)
+	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
-		logger.WithError(err).Error("failed to generate a token")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	refreshToken, err := helpers.GenerateRefreshToken(user, helpers.ServiceConfig(r))
-	if err != nil {
-		logger.WithError(err).Error("failed to generate a refresh token")
+		logger.WithError(err).Error("failed to generate jwt")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -82,14 +75,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-	result := models.NewRegistrationModel(
-		token,
-		refreshToken,
-		helpers.ServiceConfig(r).TokenExpireTime,
-		helpers.ServiceConfig(r).RefreshTokenExpireTime,
-		*user,
-	)
 
 	w.WriteHeader(http.StatusCreated)
-	ape.Render(w, result)
+	ape.Render(w, pair)
 }

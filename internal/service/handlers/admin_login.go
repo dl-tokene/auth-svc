@@ -8,7 +8,6 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
 
@@ -44,22 +43,19 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//TODO Move to doorman
 	if !nodeAdmins.CheckAdmin(common.HexToAddress(ethAddress)) {
 		logger.Debug("not admin's address")
 		ape.RenderErr(w, problems.BadRequest(errors.New("not admin's address"))...)
 		return
 	}
+
 	// success logic
-	token, err := helpers.GenerateAdminJWT(ethAddress, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	doorman := helpers.DoormanConnector(r)
+	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
-		logger.WithError(err).Error("failed to generate a token")
+		logger.WithError(err).Error("failed to generate jwt")
 		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	refreshToken, err := helpers.GenerateAdminRefreshToken(ethAddress, helpers.ServiceConfig(r))
-	if err != nil {
-		logger.WithError(err).Error("failed to generate a token")
-		ape.Render(w, problems.InternalError())
 		return
 	}
 
@@ -70,9 +66,5 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ape.Render(w, models.NewAdminLoginModel(
-		token,
-		refreshToken,
-		helpers.ServiceConfig(r).TokenExpireTime,
-		helpers.ServiceConfig(r).RefreshTokenExpireTime))
+	ape.Render(w, pair)
 }
