@@ -55,5 +55,6 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
 		return
 	}
+
 	ape.Render(w, models.NewNonceModel(message))
 }

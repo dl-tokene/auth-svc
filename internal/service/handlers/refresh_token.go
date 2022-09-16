@@ -66,5 +66,6 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 	}
+
 	ape.Render(w, result)
 }

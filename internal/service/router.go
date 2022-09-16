@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"gitlab.com/distributed_lab/ape"
 	gosdk "gitlab.com/tokene/go-sdk"
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
@@ -23,6 +24,10 @@ func (s *service) router(cfg config.Config) chi.Router {
 			helpers.CtxServiceConfig(cfg.ServiceConfig()),
 			helpers.CtxNodeAdmins(gosdk.NewNodeAdminsMock(common.HexToAddress("0x750Bd531CEA1f68418DDF2373193CfbD86A69058"))), //TODO change when admin's smart contracts ready
 		),
+		cors.Handler(cors.Options{
+			AllowedOrigins: []string{"*"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		}),
 	)
 	r.Route("/integrations/nonce-auth-svc", func(r chi.Router) {
 		r.Post("/nonce", handlers.GetNonce)
