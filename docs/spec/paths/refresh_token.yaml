@@ -9,6 +9,8 @@ post:
         schema:
           type: object
           $ref: '#/components/schemas/RefreshTokenRequest'
+  security:
+    - bearerAuth: []
   responses:
     '200':
       description: Success
