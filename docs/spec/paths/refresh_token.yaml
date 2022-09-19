@@ -8,7 +8,12 @@ post:
       application/json:
         schema:
           type: object
-          $ref: '#/components/schemas/RefreshTokenRequest'
+          required:
+            - data
+          properties:
+            data:
+              type: object
+              $ref: '#/components/schemas/RefreshTokenRequest'
   security:
     - bearerAuth: []
   responses:

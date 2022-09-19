@@ -8,8 +8,12 @@ import (
 	"gitlab.com/tokene/nonce-auth-svc/resources"
 )
 
-func NewRefreshToken(r *http.Request) (resources.RefreshTokenRequest, error) {
-	request := resources.RefreshTokenRequest{}
+type RefreshTokenRequest struct {
+	Data resources.RefreshTokenRequest
+}
+
+func NewRefreshToken(r *http.Request) (RefreshTokenRequest, error) {
+	var request RefreshTokenRequest
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {

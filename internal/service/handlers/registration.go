@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
@@ -57,7 +58,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// success logic
 	var user *data.User
-	user, err = db.Users().Insert(data.User{Address: ethAddress})
+	creationTime := time.Now().UTC()
+	user, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: &creationTime})
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
