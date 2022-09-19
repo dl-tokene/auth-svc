@@ -6,6 +6,7 @@ import (
 	"gitlab.com/distributed_lab/kit/copus/types"
 	"gitlab.com/distributed_lab/kit/kv"
 	"gitlab.com/distributed_lab/kit/pgdb"
+	doormanCfg "gitlab.com/tokene/doorman/connector/config"
 )
 
 type Config interface {
@@ -14,7 +15,7 @@ type Config interface {
 	types.Copuser
 	ServiceConfiger
 	comfig.Listenerer
-	DoormanConfiger
+	doormanCfg.DoormanConfiger
 }
 
 type config struct {
@@ -24,7 +25,7 @@ type config struct {
 	comfig.Listenerer
 	getter kv.Getter
 	ServiceConfiger
-	DoormanConfiger
+	doormanCfg.DoormanConfiger
 }
 
 func New(getter kv.Getter) Config {
@@ -35,6 +36,6 @@ func New(getter kv.Getter) Config {
 		Listenerer:      comfig.NewListenerer(getter),
 		Logger:          comfig.NewLogger(getter, comfig.LoggerOpts{}),
 		ServiceConfiger: NewServiceConfiger(getter),
-		DoormanConfiger: NewDoormanConfiger(getter),
+		DoormanConfiger: doormanCfg.NewDoormanConfiger(getter),
 	}
 }

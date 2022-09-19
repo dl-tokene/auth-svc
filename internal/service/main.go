@@ -50,8 +50,6 @@ func newService(cfg config.Config) *service {
 func Run(cfg config.Config) {
 	wg := &sync.WaitGroup{}
 
-	// TODO(rufus): would be nice to be able to switch these off from config
-
 	nonceCleaner := nonce_cleaner.NewNonceCleaner(cfg)
 	runService(nonceCleaner, wg)
 
