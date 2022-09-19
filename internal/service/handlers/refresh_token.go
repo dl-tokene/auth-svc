@@ -31,7 +31,7 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	userID, err = helpers.RetrieveRefreshToken(request.Data.RefreshToken, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to retrieve refresh token")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, errors.Unauthorized(errors.CodeUnauthorized, err))
 		return
 	}
 

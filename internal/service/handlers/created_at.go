@@ -32,7 +32,7 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 	userID, err = helpers.RetrieveRefreshToken(req.Data.SessionToken, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to retrieve session token")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, errors.Unauthorized(errors.CodeUnauthorized, err))
 		return
 	}
 
