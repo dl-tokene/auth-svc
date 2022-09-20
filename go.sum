@@ -470,6 +470,8 @@ gitlab.com/distributed_lab/running v1.6.0 h1:O2GQHgYkpNRDbobR11atOCH2rhS1okNKyad
 gitlab.com/distributed_lab/running v1.6.0/go.mod h1:4TnADX84dQjQMRHKIMPCVL0L97rD/Jxv0xDbrN6aKzk=
 gitlab.com/tokene/doorman v0.0.0-20220919105805-9d0a481119c7 h1:lrJkA0ofQPXHFJfCukaLp+cqc8ZGdZgcVYRyF3851Xg=
 gitlab.com/tokene/doorman v0.0.0-20220919105805-9d0a481119c7/go.mod h1:QXfdfOW4D9xXdZNDEh45+epjUJl3AluC3aaEQMuKbTU=
+gitlab.com/tokene/doorman v0.0.0-20220920120401-54b470a37b9d h1:yqGyJY1e5U9BWJSOiuZowMsyFxyFr0e9rG/sg7RjsVg=
+gitlab.com/tokene/doorman v0.0.0-20220920120401-54b470a37b9d/go.mod h1:QXfdfOW4D9xXdZNDEh45+epjUJl3AluC3aaEQMuKbTU=
 gitlab.com/tokene/go-sdk v0.1.1 h1:53ZGsgSjpTwRLQra0RCBkMl7btdf0JysUrnq0oWslVo=
 gitlab.com/tokene/go-sdk v0.1.1/go.mod h1:U0RSSkbLyjJZISbSXcPP8L+wqJLml2zqJvSllv86rYk=
 go.etcd.io/etcd/api/v3 v3.5.0/go.mod h1:cbVKeC6lCfl7j/8jBhAK6aIYO9XOjdptoxU/nLQcPvs=

@@ -17,7 +17,7 @@ require (
 	gitlab.com/distributed_lab/kit v1.11.1
 	gitlab.com/distributed_lab/logan v3.8.1+incompatible
 	gitlab.com/distributed_lab/running v1.6.0
-	gitlab.com/tokene/doorman v0.0.0-20220919105805-9d0a481119c7
+	gitlab.com/tokene/doorman v0.0.0-20220920120401-54b470a37b9d
 	gitlab.com/tokene/go-sdk v0.1.1
 )
 
