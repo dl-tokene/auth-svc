@@ -1,8 +1,10 @@
 post:
   tags:
     - User Authentication
-  summary: Refresh token endpoint
-  operationId: refreshToken
+  summary: CreatedAt
+  operationId: createdAt
+  security:
+    - bearerAuth: []
   requestBody:
     content:
       application/json:
@@ -13,9 +15,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/RefreshTokenRequest'
-  security:
-    - bearerAuth: []
+              $ref: '#/components/schemas/SessionTokenRequest'
   responses:
     '200':
       description: Success
@@ -26,8 +26,19 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/RefreshTokenResponse'
+                $ref: '#/components/schemas/CreatedAt'
     '400':
-      $ref: "#/components/responses/BadRequest"
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errors
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoginError"
     '500':
       $ref: "#/components/responses/InternalError"

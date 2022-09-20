@@ -1,5 +1,5 @@
 allOf:
-  - $ref: '#/components/schemas/UserKey'
+  - $ref: '#/components/schemas/CreatedAt'
   - type: object
     required:
       - attributes
@@ -7,8 +7,8 @@ allOf:
       attributes:
         type: object
         required:
-          - address
+          - created_at
         properties:
-          address:
+          created_at:
             type: string
-            example: "0x2a2288cdceEeb2CF60..."
+            example: "11-11-2011 11:11:11"

@@ -81,6 +81,80 @@
         }
       }
     },
+    "/created_at": {
+      "post": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "CreatedAt",
+        "operationId": "createdAt",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/SessionTokenRequest"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/CreatedAt"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "errors"
+                  ],
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LoginError"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "tags": [
@@ -234,11 +308,24 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/RefreshTokenRequest"
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/RefreshTokenRequest"
+                  }
+                }
               }
             }
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -552,6 +639,33 @@
             "description": "Backend-generated message, signed with MetaMask's private_sign"
           }
         }
+      },
+      "CreatedAt": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatedAt"
+          },
+          {
+            "type": "object",
+            "required": [
+              "attributes"
+            ],
+            "properties": {
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "created_at"
+                ],
+                "properties": {
+                  "created_at": {
+                    "type": "string",
+                    "example": "11-11-2011 11:11:11"
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       "BadRequestError": {
         "type": "object",
@@ -2505,6 +2619,17 @@
           }
         }
       },
+      "SessionTokenRequest": {
+        "type": "object",
+        "required": [
+          "session_token"
+        ],
+        "properties": {
+          "session_token": {
+            "type": "string"
+          }
+        }
+      },
       "User": {
         "allOf": [
           {
@@ -2713,6 +2838,15 @@
           ],
           "default": "desc",
           "description": "Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID."
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
         }
       }
     }

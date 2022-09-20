@@ -11,9 +11,10 @@ import (
 	"gitlab.com/tokene/nonce-auth-svc/resources"
 )
 
-func RefreshToken(w http.ResponseWriter, r *http.Request) {
+func CreatedAt(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
-	request, err := requests.NewRefreshToken(r)
+
+	req, err := requests.NewCreatedAtRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to parse request")
 		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
@@ -28,9 +29,9 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err = helpers.RetrieveRefreshToken(request.Data.RefreshToken, r)
+	userID, err = helpers.RetrieveRefreshToken(req.Data.SessionToken, r)
 	if err != nil {
-		logger.WithError(err).Debug("failed to retrieve refresh token")
+		logger.WithError(err).Debug("failed to retrieve session token")
 		ape.RenderErr(w, errors.Unauthorized(errors.CodeUnauthorized, err))
 		return
 	}
@@ -47,24 +48,10 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// success logic
-	token, err := helpers.GenerateJWT(user, helpers.AuthTypeSession, helpers.ServiceConfig(r))
-	if err != nil {
-		details := "failed to generate a token"
-		logger.WithError(err).Error(details)
-		ape.RenderErr(w, errors.InternalError(details))
-		return
-	}
-	refreshToken, err := helpers.GenerateRefreshToken(user, helpers.ServiceConfig(r))
-	if err != nil {
-		details := "failed to generate a refresh token"
-		logger.WithError(err).Error(details)
-		ape.Render(w, errors.InternalError(details))
-		return
-	}
 
-	result := resources.RefreshTokenResponse{
-		AccessToken:  token,
-		RefreshToken: refreshToken,
+	result := resources.CreatedAt{
+		Key:        resources.Key{Type: resources.USER, ID: fmt.Sprint(user.ID)},
+		Attributes: resources.CreatedAtAttributes{CreatedAt: user.CreatedAt.String()},
 	}
 
 	ape.Render(w, result)
