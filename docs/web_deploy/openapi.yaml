@@ -56,8 +56,13 @@ paths:
         - User Authentication
       summary: CreatedAt
       operationId: createdAt
-      security:
-        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            format: 'Bearer {token}'
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       requestBody:
         content:
           application/json:
@@ -205,8 +210,13 @@ paths:
                 data:
                   type: object
                   $ref: '#/components/schemas/RefreshTokenRequest'
-      security:
-        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            format: 'Bearer {token}'
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
         '200':
           description: Success
