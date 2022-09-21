@@ -23,10 +23,10 @@ paths:
               properties:
                 data:
                   type: object
-                  $ref: '#/components/schemas/AdminLoginRequest'
+                  $ref: '#/components/schemas/AdminLogin'
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Success
           content:
             application/json:
               schema:
@@ -34,7 +34,7 @@ paths:
                 properties:
                   data:
                     type: object
-                    $ref: '#/components/schemas/AdminLogin'
+                    $ref: '#/components/schemas/JwtPair'
         '400':
           description: Bad Request
           content:
@@ -48,6 +48,41 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/LoginError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /created_at:
+    post:
+      tags:
+        - User Authentication
+      summary: Created at
+      operationId: createdAt
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/CreatedAt'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalError'
   /login:
@@ -66,7 +101,7 @@ paths:
               properties:
                 data:
                   type: object
-                  $ref: '#/components/schemas/LoginRequest'
+                  $ref: '#/components/schemas/Login'
       responses:
         '200':
           description: Success
@@ -77,7 +112,7 @@ paths:
                 properties:
                   data:
                     type: object
-                    $ref: '#/components/schemas/Login'
+                    $ref: '#/components/schemas/JwtPair'
         '400':
           description: Bad Request
           content:
@@ -91,6 +126,13 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/LoginError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalError'
   /nonce:
@@ -147,14 +189,11 @@ paths:
     post:
       tags:
         - User Authentication
-      summary: Refresh token endpoint
+      summary: Refresh token
+      description: Use Bearer authentication for make request.
       operationId: refreshToken
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/RefreshTokenRequest'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Success
@@ -165,9 +204,14 @@ paths:
                 properties:
                   data:
                     type: object
-                    $ref: '#/components/schemas/RefreshTokenResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                    $ref: '#/components/schemas/JwtPair'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalError'
   /register:
@@ -197,7 +241,7 @@ paths:
                 properties:
                   data:
                     type: object
-                    $ref: '#/components/schemas/Registration'
+                    $ref: '#/components/schemas/JwtPair'
         '400':
           description: Bad Request
           content:
@@ -227,28 +271,10 @@ components:
             attributes:
               type: object
               required:
-                - access_token
-                - refresh_token
-                - token_type
-                - expires_in
-                - refresh_expires_in
+                - auth_pair
               properties:
-                access_token:
-                  type: string
-                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
-                refresh_token:
-                  type: string
-                token_type:
-                  type: string
-                  enum:
-                    - JWT
-                expires_in:
-                  type: int64
-                  example: 300
-                  description: In seconds
-                refresh_expires_in:
-                  type: int64
-                  description: In hours
+                auth_pair:
+                  $ref: '#/components/schemas/AuthPair'
     AdminLoginKey:
       type: object
       required:
@@ -258,29 +284,6 @@ components:
           type: string
           enum:
             - admin_login
-    AdminLoginKeyRequest:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - admin_login_request
-    AdminLoginRequest:
-      allOf:
-        - $ref: '#/components/schemas/AdminLoginRequest'
-        - type: object
-          required:
-            - attributes
-          properties:
-            attributes:
-              type: object
-              required:
-                - auth_pair
-              properties:
-                auth_pair:
-                  $ref: '#/components/schemas/AuthPair'
     AuthNonce:
       allOf:
         - $ref: '#/components/schemas/AuthNonceKey'
@@ -351,6 +354,16 @@ components:
           pattern: '^0x[0-9a-fA-F]+$'
           example: '0x0bf7b3c454fedc179af06cd02f62fb3d89b2ac16962d50137330ffeebe9fac5f6bb2d1f2a971834a8eb84ce0a28894578286812a1131cfe7921b2d325d0b06041c'
           description: 'Backend-generated message, signed with MetaMask''s private_sign'
+    CreatedAt:
+      type: object
+      required:
+        - address
+        - created_at
+      properties:
+        address:
+          type: string
+        created_at:
+          type: string
     BadRequestError:
       type: object
       required:
@@ -1873,9 +1886,38 @@ components:
           enum:
             - session_token_not_found
             - session_token_invalid
-    Login:
+    Jwt:
       allOf:
-        - $ref: '#/components/schemas/LoginKey'
+        - $ref: '#/components/schemas/JwtKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              required:
+                - expires_in
+              type: object
+              properties:
+                expires_in:
+                  type: int64
+                  example: 3000
+    JwtKey:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        id:
+          type: string
+          description: token
+        type:
+          type: string
+          enum:
+            - refresh_jwt
+            - session_jwt
+    JwtPair:
+      allOf:
+        - $ref: '#/components/schemas/JwtPairKey'
         - type: object
           required:
             - attributes
@@ -1883,29 +1925,16 @@ components:
             attributes:
               type: object
               required:
-                - access_token
                 - refresh_token
-                - token_type
-                - expires_in
-                - refresh_expires_in
+                - session_token
               properties:
-                access_token:
-                  type: string
-                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
                 refresh_token:
-                  type: string
-                token_type:
-                  type: string
-                  enum:
-                    - JWT
-                expires_in:
-                  type: int64
-                  example: 300
-                  description: In seconds
-                refresh_expires_in:
-                  type: int64
-                  description: In hours
-    LoginKey:
+                  type: object
+                  $ref: '#/components/schemas/Jwt'
+                session_token:
+                  type: object
+                  $ref: '#/components/schemas/Jwt'
+    JwtPairKey:
       type: object
       required:
         - type
@@ -1913,10 +1942,10 @@ components:
         type:
           type: string
           enum:
-            - login
-    LoginRequest:
+            - jwt_pair
+    Login:
       allOf:
-        - $ref: '#/components/schemas/LoginRequestKey'
+        - $ref: '#/components/schemas/LoginKey'
         - type: object
           required:
             - attributes
@@ -1928,7 +1957,7 @@ components:
               properties:
                 auth_pair:
                   $ref: '#/components/schemas/AuthPair'
-    LoginRequestKey:
+    LoginKey:
       type: object
       required:
         - type
@@ -1937,23 +1966,6 @@ components:
           type: string
           enum:
             - login_request
-    RefreshTokenRequest:
-      type: object
-      required:
-        - refresh_token
-      properties:
-        refresh_token:
-          type: string
-    RefreshTokenResponse:
-      type: object
-      required:
-        - access_token
-        - refresh_token
-      properties:
-        access_token:
-          type: string
-        refresh_token:
-          type: string
     Register:
       allOf:
         - $ref: '#/components/schemas/RegisterKey'
@@ -1977,83 +1989,6 @@ components:
           type: string
           enum:
             - register
-    Registration:
-      allOf:
-        - $ref: '#/components/schemas/RegistrationKey'
-        - type: object
-          required:
-            - attributes
-          properties:
-            attributes:
-              type: object
-              required:
-                - access_token
-                - refresh_token
-                - token_type
-                - expires_in
-                - refresh_expires_in
-                - user
-              properties:
-                access_token:
-                  type: string
-                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2FkZHJlc3MiOi...
-                refresh_token:
-                  type: string
-                token_type:
-                  type: string
-                  enum:
-                    - JWT
-                expires_in:
-                  type: int64
-                  example: 300
-                  description: In seconds
-                refresh_expires_in:
-                  type: int64
-                  example: 7
-                  description: In hours
-                user:
-                  $ref: '#/components/schemas/User'
-    RegistrationKey:
-      type: object
-      required:
-        - id
-        - type
-      properties:
-        id:
-          type: int64
-          example: 83
-          description: User ID
-        type:
-          type: string
-          enum:
-            - registration
-    User:
-      allOf:
-        - $ref: '#/components/schemas/UserKey'
-        - type: object
-          required:
-            - attributes
-          properties:
-            attributes:
-              type: object
-              required:
-                - address
-              properties:
-                address:
-                  type: string
-                  example: 0x2a2288cdceEeb2CF60...
-    UserKey:
-      type: object
-      required:
-        - id
-        - type
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - user
   responses:
     BadRequest:
       description: Bad Request
@@ -2162,3 +2097,9 @@ components:
           - desc
         default: desc
         description: 'Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID.'
+  securitySchemes:
+    bearerAuth:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT

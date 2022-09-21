@@ -1,9 +1,8 @@
 post:
   tags:
     - User Authentication
-  summary: Refresh token
-  description: Use Bearer authentication for make request.
-  operationId: refreshToken
+  summary: Created at
+  operationId: createdAt
   security:
     - bearerAuth: []
   responses:
@@ -16,7 +15,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/JwtPair'
+                $ref: '#/components/schemas/CreatedAt'
     '401':
       description: Unauthorized
       content:

@@ -4,6 +4,6 @@
 
 package resources
 
-type LoginAttributes struct {
-	AuthPair AuthPair `json:"auth_pair"`
+type JwtAttributes struct {
+	ExpiresIn int64 `json:"expires_in"`
 }

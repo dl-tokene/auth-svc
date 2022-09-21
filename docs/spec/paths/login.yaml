@@ -13,7 +13,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/Login'
   responses:
     '200':
       description: Success
@@ -38,5 +38,12 @@ post:
                 type: array
                 items:
                   $ref: "#/components/schemas/LoginError"
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/UnauthorizedError"
     '500':
       $ref: "#/components/responses/InternalError"

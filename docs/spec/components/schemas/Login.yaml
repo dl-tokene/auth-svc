@@ -1,5 +1,5 @@
 allOf:
-  - $ref: '#/components/schemas/LoginRequestKey'
+  - $ref: '#/components/schemas/LoginKey'
   - type: object
     required:
       - attributes
