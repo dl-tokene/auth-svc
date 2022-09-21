@@ -88,9 +88,15 @@
         ],
         "summary": "CreatedAt",
         "operationId": "createdAt",
-        "security": [
+        "parameters": [
           {
-            "bearerAuth": []
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "Bearer {token}",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
           }
         ],
         "requestBody": {
@@ -321,9 +327,15 @@
             }
           }
         },
-        "security": [
+        "parameters": [
           {
-            "bearerAuth": []
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "Bearer {token}",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
           }
         ],
         "responses": {
