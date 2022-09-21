@@ -26,8 +26,7 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	termsHash := request.Data.Attributes.TermsHash
 	db := helpers.DB(r)
 
-	timeToExpire := helpers.ServiceConfig(r).NonceExpireTime
-	expireTime := time.Now().UTC().Add(timeToExpire)
+	expireTime := time.Now().UTC().Add(helpers.ServiceConfig(r).NonceExpireTime)
 	nonceToken := nonces.NewToken()
 
 	var message string = util.NonceToMessage(nonceToken)
