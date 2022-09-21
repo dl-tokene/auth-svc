@@ -58,12 +58,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-	err = db.Nonce().FilterByAddress(ethAddress).Delete()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
 
 	w.WriteHeader(http.StatusCreated)
 	ape.Render(w, pair)
