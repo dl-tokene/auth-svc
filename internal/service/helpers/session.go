@@ -6,6 +6,7 @@ import (
 	"github.com/google/jsonapi"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/distributed_lab/logan/v3/errors"
+	"gitlab.com/tokene/doorman/connector"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
 )
 
@@ -36,4 +37,29 @@ func ValidateNonce(address string, signature string, r *http.Request) (*jsonapi.
 		return problems.BadRequest(errors.New("signature verification failed"))[0], err
 	}
 	return nil, nil
+}
+func ValidateJWT(doorman connector.ConnectorI, r *http.Request) (string, string, error) {
+
+	token, err := doorman.GetAuthToken(r)
+	if err != nil {
+		return "", "", err
+	}
+	address, err := doorman.ValidateJwt(token)
+	if err != nil {
+		return "", "", err
+	}
+	return address, token, err
+}
+func ValidatePurposeJWT(doorman connector.ConnectorI, r *http.Request) (string, string, string, error) {
+	address, token, err := ValidateJWT(doorman, r)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	purpose, err := doorman.CheckPurpose(token)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	return address, token, purpose, nil
 }

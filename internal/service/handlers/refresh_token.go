@@ -13,21 +13,14 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	db := helpers.DB(r)
 	doorman := helpers.DoormanConnector(r)
 
-	refreshToken, err := doorman.GetAuthToken(r)
+	ethAddress, refreshToken, err := helpers.ValidateJWT(doorman, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed authentication")
 		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 
-	ethAddress, err := doorman.ValidateJwt(refreshToken)
-	if err != nil {
-		logger.WithError(err).Debug("failed authentication")
-		ape.RenderErr(w, problems.Unauthorized())
-		return
-	}
 	pair, err := doorman.RefreshJwt(refreshToken)
-
 	if err != nil {
 		logger.WithError(err).Debug("failed authentication")
 		ape.RenderErr(w, problems.Unauthorized())

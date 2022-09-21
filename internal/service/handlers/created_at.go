@@ -15,23 +15,9 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 	db := helpers.DB(r)
 	doorman := helpers.DoormanConnector(r)
 
-	token, err := doorman.GetAuthToken(r)
+	address, _, _, err := helpers.ValidatePurposeJWT(doorman, r)
 	if err != nil {
-		logger.WithError(err).Error("failed to get token")
-		ape.RenderErr(w, problems.Unauthorized())
-		return
-	}
-
-	_, err = doorman.CheckPurpose(token)
-	if err != nil {
-		logger.WithError(err).Error("failed to get purpose of jwt")
-		ape.RenderErr(w, problems.Unauthorized())
-		return
-	}
-
-	address, err := doorman.ValidateJwt(token)
-	if err != nil {
-		logger.WithError(err).Error("failed to get user address")
+		logger.WithError(err).Debug("failed authentication")
 		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
