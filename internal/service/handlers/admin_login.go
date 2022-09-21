@@ -19,6 +19,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
+
 	db := helpers.DB(r)
 	nodeAdmins := helpers.NodeAdmins(r)
 	ethAddress := request.Data.Attributes.AuthPair.Address

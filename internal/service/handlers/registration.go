@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
@@ -55,7 +56,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// success logic
-	_, err = db.Users().Insert(data.User{Address: ethAddress})
+	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now()})
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, problems.InternalError())

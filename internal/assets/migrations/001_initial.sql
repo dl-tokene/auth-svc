@@ -2,6 +2,7 @@
 
 create table users (
     id bigserial primary key,
+    created_at timestamp without time zone not null,
     address Bytea
 );
 
