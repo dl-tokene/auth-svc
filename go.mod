@@ -11,6 +11,7 @@ require (
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.2.1
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
+	github.com/google/jsonapi v1.0.0
 	github.com/rubenv/sql-migrate v1.1.2
 	gitlab.com/distributed_lab/ape v1.7.1
 	gitlab.com/distributed_lab/figure v2.1.0+incompatible
@@ -33,7 +34,6 @@ require (
 	github.com/getsentry/sentry-go v0.7.0 // indirect
 	github.com/go-gorp/gorp/v3 v3.0.2 // indirect
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1 // indirect
-	github.com/google/jsonapi v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jmoiron/sqlx v1.2.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
