@@ -44,7 +44,6 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO Move to doorman
 	if !nodeAdmins.CheckAdmin(common.HexToAddress(ethAddress)) {
 		logger.Debug("not admin's address")
 		ape.RenderErr(w, problems.BadRequest(errors.New("not admin's address"))...)
