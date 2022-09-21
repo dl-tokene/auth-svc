@@ -3,8 +3,14 @@ post:
     - User Authentication
   summary: Created at
   operationId: createdAt
-  security:
-    - bearerAuth: []
+  description: Get information when jwt owner was registered
+  parameters:
+    - in: header
+      name: Authorization
+      schema:
+        type: string
+        format: Bearer {token}
+        example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   responses:
     '200':
       description: Success

@@ -3,6 +3,7 @@ post:
     - User Authentication
   summary: Registration
   operationId: register
+  description: Using signed nonce, get a jwt pair and register new address.
   requestBody:
     content:
       application/json:

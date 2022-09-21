@@ -19,10 +19,18 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
+
 	db := helpers.DB(r)
 
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
+
+	apiErr, err := helpers.ValidateNonce(ethAddress, signature, r)
+	if err != nil {
+		logger.WithError(err).Debug("failed to validate nonce")
+		ape.RenderErr(w, apiErr)
+		return
+	}
 
 	existingAddress, err := db.Users().FilterByAddress(ethAddress).Get()
 	if err != nil {
@@ -32,26 +40,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	if existingAddress != nil {
 		ape.RenderErr(w, problems.Conflict())
-		return
-	}
-
-	// validate request
-	nonce, err := db.Nonce().FilterByAddress(ethAddress).Get()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	if nonce == nil {
-		logger.WithField("address", ethAddress).Debug("nonce not found")
-		ape.RenderErr(w, problems.Unauthorized())
-		return
-	}
-
-	err = helpers.VerifySignature(helpers.NonceToHash(nonce), signature, ethAddress)
-	if err != nil {
-		logger.WithError(err).Debug("signature verification failed")
-		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 

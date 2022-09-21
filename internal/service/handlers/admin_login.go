@@ -13,6 +13,7 @@ import (
 
 func AdminLogin(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
+
 	request, err := requests.NewAdminLoginRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
@@ -20,27 +21,14 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := helpers.DB(r)
 	nodeAdmins := helpers.NodeAdmins(r)
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	nonce, err := db.Nonce().FilterByAddress(ethAddress).Get()
+	apiErr, err := helpers.ValidateNonce(ethAddress, signature, r)
 	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	if nonce == nil {
-		logger.WithField("address", ethAddress).Debug("nonce not found on login")
-		ape.RenderErr(w, problems.BadRequest(errors.New("nonce does not exist"))...)
-		return
-	}
-
-	err = helpers.VerifySignature(helpers.NonceToHash(nonce), signature, ethAddress)
-	if err != nil {
-		logger.WithError(err).Debug("signature verification failed")
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		logger.WithError(err).Debug("failed to validate nonce")
+		ape.RenderErr(w, apiErr)
 		return
 	}
 
@@ -55,13 +43,6 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
 		logger.WithError(err).Error("failed to generate jwt")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
-	err = db.Nonce().FilterByAddress(ethAddress).Delete()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

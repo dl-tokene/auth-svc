@@ -3,6 +3,7 @@ post:
     - User Authentication
   summary: Login
   operationId: login
+  description: Using signed nonce, get a jwt pair for login.
   requestBody:
     content:
       application/json:

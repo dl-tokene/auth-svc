@@ -2,6 +2,7 @@ post:
   tags:
     - Admin Authentication
   summary: AdminLogin
+  description: Using signed nonce, get a jwt pair for login.
   operationId: adminlogin
   requestBody:
     content:
