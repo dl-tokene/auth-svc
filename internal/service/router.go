@@ -27,6 +27,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 		cors.Handler(cors.Options{
 			AllowedOrigins: []string{"*"},
 			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+			AllowedHeaders: []string{"*"},
 		}),
 	)
 	r.Route("/integrations/nonce-auth-svc", func(r chi.Router) {
