@@ -7,29 +7,21 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 	"gitlab.com/tokene/nonce-auth-svc/resources"
 )
 
 func CreatedAt(w http.ResponseWriter, r *http.Request) {
 	logger := helpers.Log(r)
-
-	req, err := requests.NewCreatedAtRequest(r)
-	if err != nil {
-		logger.WithError(err).Debug("failed to parse request")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
-		return
-	}
 	db := helpers.DB(r)
 
-	userID, apiErr, err := helpers.Authenticate(helpers.AuthTypeSession, r)
+	userID, token, apiErr, err := helpers.Authenticate(helpers.AuthTypeSession, r)
 	if apiErr != nil || err != nil {
 		logger.WithError(err).Debug("failed authentication")
 		ape.RenderErr(w, apiErr)
 		return
 	}
 
-	userID, err = helpers.RetrieveRefreshToken(req.Data.SessionToken, r)
+	userID, err = helpers.RetrieveRefreshToken(token, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed to retrieve session token")
 		ape.RenderErr(w, errors.Unauthorized(errors.CodeUnauthorized, err))
@@ -49,9 +41,11 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 
 	// success logic
 
-	result := resources.CreatedAt{
-		Key:        resources.Key{Type: resources.USER, ID: fmt.Sprint(user.ID)},
-		Attributes: resources.CreatedAtAttributes{CreatedAt: user.CreatedAt.String()},
+	result := resources.CreatedAtResponse{
+		Data: resources.CreatedAt{
+			Attributes: resources.CreatedAtAttributes{CreatedAt: user.CreatedAt.String()},
+			Key:        resources.Key{Type: resources.USER, ID: fmt.Sprint(user.ID)},
+		},
 	}
 
 	ape.Render(w, result)

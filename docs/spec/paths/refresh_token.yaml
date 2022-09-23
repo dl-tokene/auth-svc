@@ -1,19 +1,8 @@
-post:
+get:
   tags:
     - User Authentication
   summary: Refresh token endpoint
   operationId: refreshToken
-  requestBody:
-    content:
-      application/json:
-        schema:
-          type: object
-          required:
-            - data
-          properties:
-            data:
-              type: object
-              $ref: '#/components/schemas/RefreshTokenRequest'
   parameters:
     - in: header
       name: Authorization
@@ -31,7 +20,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/RefreshTokenResponse'
+                $ref: '#/components/schemas/Login'
     '400':
       $ref: "#/components/responses/BadRequest"
     '500':

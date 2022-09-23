@@ -82,7 +82,7 @@
       }
     },
     "/created_at": {
-      "post": {
+      "get": {
         "tags": [
           "User Authentication"
         ],
@@ -99,24 +99,6 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "data"
-                ],
-                "properties": {
-                  "data": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/SessionTokenRequest"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Success",
@@ -303,30 +285,12 @@
       }
     },
     "/refresh_token": {
-      "post": {
+      "get": {
         "tags": [
           "User Authentication"
         ],
         "summary": "Refresh token endpoint",
         "operationId": "refreshToken",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "data"
-                ],
-                "properties": {
-                  "data": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/RefreshTokenRequest"
-                  }
-                }
-              }
-            }
-          }
-        },
         "parameters": [
           {
             "in": "header",
@@ -348,7 +312,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/RefreshTokenResponse"
+                      "$ref": "#/components/schemas/Login"
                     }
                   }
                 }
@@ -2491,32 +2455,6 @@
           }
         }
       },
-      "RefreshTokenRequest": {
-        "type": "object",
-        "required": [
-          "refresh_token"
-        ],
-        "properties": {
-          "refresh_token": {
-            "type": "string"
-          }
-        }
-      },
-      "RefreshTokenResponse": {
-        "type": "object",
-        "required": [
-          "access_token",
-          "refresh_token"
-        ],
-        "properties": {
-          "access_token": {
-            "type": "string"
-          },
-          "refresh_token": {
-            "type": "string"
-          }
-        }
-      },
       "Register": {
         "allOf": [
           {
@@ -2628,17 +2566,6 @@
             "enum": [
               "registration"
             ]
-          }
-        }
-      },
-      "SessionTokenRequest": {
-        "type": "object",
-        "required": [
-          "session_token"
-        ],
-        "properties": {
-          "session_token": {
-            "type": "string"
           }
         }
       },
@@ -2850,15 +2777,6 @@
           ],
           "default": "desc",
           "description": "Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID."
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "bearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
         }
       }
     }
