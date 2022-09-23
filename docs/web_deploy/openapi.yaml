@@ -51,7 +51,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
   /created_at:
-    post:
+    get:
       tags:
         - User Authentication
       summary: CreatedAt
@@ -63,17 +63,6 @@ paths:
             type: string
             format: 'Bearer {token}'
             example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-              properties:
-                data:
-                  type: object
-                  $ref: '#/components/schemas/SessionTokenRequest'
       responses:
         '200':
           description: Success
@@ -194,22 +183,11 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
   /refresh_token:
-    post:
+    get:
       tags:
         - User Authentication
       summary: Refresh token endpoint
       operationId: refreshToken
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-              properties:
-                data:
-                  type: object
-                  $ref: '#/components/schemas/RefreshTokenRequest'
       parameters:
         - in: header
           name: Authorization
@@ -2246,9 +2224,3 @@ components:
           - desc
         default: desc
         description: 'Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID.'
-  securitySchemes:
-    bearerAuth:
-      bearerAuth:
-        type: http
-        scheme: bearer
-        bearerFormat: JWT

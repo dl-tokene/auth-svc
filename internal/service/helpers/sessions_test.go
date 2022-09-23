@@ -33,7 +33,7 @@ func TestJWTAuthorization(t *testing.T) {
 	req = req.WithContext(CtxServiceConfig(cfg.ServiceConfig())(context.Background()))
 
 	//Test fucntion
-	id, err1, err2 := Authenticate(AuthTypeSession, req)
+	id, _, err1, err2 := Authenticate(AuthTypeSession, req)
 	if err1 != nil || err2 != nil || id != 1 {
 		(*t).Errorf("got %q %q, wanted nil", err1, err2)
 	}

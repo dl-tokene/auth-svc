@@ -156,18 +156,18 @@ func getSessionToken(authType string, r *http.Request) (string, error) {
 	}
 	return "", errors.WithStack(errors.New("unexpected authentication type received"))
 }
-func Authenticate(authType string, r *http.Request) (int64, *jsonapi.ErrorObject, error) {
+func Authenticate(authType string, r *http.Request) (int64, string, *jsonapi.ErrorObject, error) {
 	sessToken, err := getSessionToken(authType, r)
 	if err != nil {
 		apierr := apierrors.Unauthorized(apierrors.CodeSessionTokenNotFound)
 		err = errors.Wrap(err, "session token not found")
-		return 0, apierr, err
+		return 0, "", apierr, err
 	}
 	claims, err := parseStandardJWT(sessToken, r)
 	if err != nil {
 		apierr := apierrors.Unauthorized(apierrors.CodeSessionTokenInvalid)
 		err = errors.Wrap(err, "failed to parse jwt token")
-		return 0, apierr, err
+		return 0, "", apierr, err
 	}
-	return claims.UserID, nil, nil
+	return claims.UserID, sessToken, nil, nil
 }
