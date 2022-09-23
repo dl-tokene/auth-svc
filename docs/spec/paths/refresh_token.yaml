@@ -20,7 +20,7 @@ get:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/RefreshTokenResponse'
+                $ref: '#/components/schemas/Login'
     '400':
       $ref: "#/components/responses/BadRequest"
     '500':

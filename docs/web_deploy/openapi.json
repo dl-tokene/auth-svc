@@ -312,7 +312,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/RefreshTokenResponse"
+                      "$ref": "#/components/schemas/Login"
                     }
                   }
                 }
@@ -2455,32 +2455,6 @@
           }
         }
       },
-      "RefreshTokenRequest": {
-        "type": "object",
-        "required": [
-          "refresh_token"
-        ],
-        "properties": {
-          "refresh_token": {
-            "type": "string"
-          }
-        }
-      },
-      "RefreshTokenResponse": {
-        "type": "object",
-        "required": [
-          "access_token",
-          "refresh_token"
-        ],
-        "properties": {
-          "access_token": {
-            "type": "string"
-          },
-          "refresh_token": {
-            "type": "string"
-          }
-        }
-      },
       "Register": {
         "allOf": [
           {
@@ -2592,17 +2566,6 @@
             "enum": [
               "registration"
             ]
-          }
-        }
-      },
-      "SessionTokenRequest": {
-        "type": "object",
-        "required": [
-          "session_token"
-        ],
-        "properties": {
-          "session_token": {
-            "type": "string"
           }
         }
       },

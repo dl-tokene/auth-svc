@@ -7,7 +7,7 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/resources"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 )
 
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -55,10 +55,9 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := resources.RefreshTokenResponse{
-		AccessToken:  sessionToken,
-		RefreshToken: refreshToken,
-	}
-
-	ape.Render(w, result)
+	ape.Render(w, models.NewLoginModel(
+		sessionToken,
+		refreshToken,
+		helpers.ServiceConfig(r).TokenExpireTime,
+		helpers.ServiceConfig(r).RefreshTokenExpireTime))
 }
