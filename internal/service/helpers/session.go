@@ -8,6 +8,7 @@ import (
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"gitlab.com/tokene/doorman/connector"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 )
 
 func GetNonce(address string, r *http.Request) (*data.Nonce, *jsonapi.ErrorObject, error) {
@@ -18,12 +19,12 @@ func GetNonce(address string, r *http.Request) (*data.Nonce, *jsonapi.ErrorObjec
 	}
 
 	if nonce == nil {
-		return nil, problems.BadRequest(errors.New("nonce does not exist"))[0], errors.New("nonce not found")
+		return nil, apierrors.BadRequest(apierrors.CodeNonceNotFound), errors.New("nonce not found")
 	}
 
 	err = db.Nonce().FilterByAddress(address).Delete()
 	if err != nil {
-		return nil, problems.InternalError(), errors.New("failed to query db")
+		return nil, apierrors.InternalError(err), errors.New("failed to query db")
 	}
 	return nonce, nil, nil
 }
@@ -34,7 +35,7 @@ func ValidateNonce(address string, signature string, r *http.Request) (*jsonapi.
 	}
 	err = VerifySignature(NonceToHash(nonce), signature, address)
 	if err != nil {
-		return problems.BadRequest(errors.New("signature verification failed"))[0], err
+		return apierrors.BadRequest(apierrors.CodeSignatureVerificationFailed, err), err
 	}
 	return nil, nil
 }

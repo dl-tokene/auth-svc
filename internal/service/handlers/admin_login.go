@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/common"
 	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
@@ -17,7 +16,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewAdminLoginRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		ape.RenderErr(w, apierrors.BadRequest(apierrors.CodeBadRequestData, err))
 		return
 	}
 
@@ -34,7 +33,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 
 	if !nodeAdmins.CheckAdmin(common.HexToAddress(ethAddress)) {
 		logger.Debug("not admin's address")
-		ape.RenderErr(w, problems.BadRequest(errors.New("not admin's address"))...)
+		ape.RenderErr(w, apierrors.BadRequest(apierrors.CodeAdminNotFound))
 		return
 	}
 
@@ -43,7 +42,7 @@ func AdminLogin(w http.ResponseWriter, r *http.Request) {
 	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
 		logger.WithError(err).Error("failed to generate jwt")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 
