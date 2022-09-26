@@ -59,7 +59,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
   /integrations/nonce-auth-svc/created_at:
-    post:
+    get:
       tags:
         - User Authentication
       summary: Created at
@@ -194,7 +194,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
   /integrations/nonce-auth-svc/refresh_token:
-    post:
+    get:
       tags:
         - User Authentication
       summary: Refresh token
@@ -369,15 +369,32 @@ components:
           example: '0x0bf7b3c454fedc179af06cd02f62fb3d89b2ac16962d50137330ffeebe9fac5f6bb2d1f2a971834a8eb84ce0a28894578286812a1131cfe7921b2d325d0b06041c'
           description: 'Backend-generated message, signed with MetaMask''s private_sign'
     CreatedAt:
+      allOf:
+        - $ref: '#/components/schemas/CreatedAtKey'
+        - type: object
+          required:
+            - attributes
+          properties:
+            attributes:
+              type: object
+              required:
+                - created_at
+                - address
+              properties:
+                address:
+                  type: string
+                created_at:
+                  type: string
+                  example: '11-11-2011 11:11:11'
+    CreatedAtKey:
       type: object
       required:
-        - address
-        - created_at
+        - type
       properties:
-        address:
+        type:
           type: string
-        created_at:
-          type: string
+          enum:
+            - created_at
     BadRequestError:
       type: object
       required:

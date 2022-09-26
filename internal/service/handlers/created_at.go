@@ -31,9 +31,14 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 
 	// success logic
 
-	result := resources.CreatedAt{
-		Address:   address,
-		CreatedAt: user.CreatedAt.Format("02-01-2006 15:04:05"),
+	result := resources.CreatedAtResponse{
+		Data: resources.CreatedAt{
+			Key: resources.Key{Type: resources.CREATED_AT},
+			Attributes: resources.CreatedAtAttributes{
+				Address:   address,
+				CreatedAt: user.CreatedAt.Format("02-01-2006 15:04:05"),
+			},
+		},
 	}
 
 	ape.Render(w, result)

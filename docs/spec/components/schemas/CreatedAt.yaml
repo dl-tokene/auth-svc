@@ -1,10 +1,17 @@
-type: object
-required:
-  - address
-  - created_at
-
-properties:
-  address:
-    type: string
-  created_at:
-    type: string
+allOf:
+  - $ref: '#/components/schemas/CreatedAtKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - created_at
+          - address
+        properties:
+          address:
+            type: string
+          created_at:
+            type: string
+            example: "11-11-2011 11:11:11"

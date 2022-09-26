@@ -11,6 +11,7 @@ const (
 	ADMIN_LOGIN        ResourceType = "admin_login"
 	AUTH_NONCE_MESSAGE ResourceType = "auth_nonce_message"
 	AUTH_NONCE_REQUEST ResourceType = "auth_nonce_request"
+	CREATED_AT         ResourceType = "created_at"
 	REFRESH_JWT        ResourceType = "refresh_jwt"
 	SESSION_JWT        ResourceType = "session_jwt"
 	JWT_PAIR           ResourceType = "jwt_pair"

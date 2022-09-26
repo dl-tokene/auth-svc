@@ -94,7 +94,7 @@
       }
     },
     "/integrations/nonce-auth-svc/created_at": {
-      "post": {
+      "get": {
         "tags": [
           "User Authentication"
         ],
@@ -300,7 +300,7 @@
       }
     },
     "/integrations/nonce-auth-svc/refresh_token": {
-      "post": {
+      "get": {
         "tags": [
           "User Authentication"
         ],
@@ -579,17 +579,47 @@
         }
       },
       "CreatedAt": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatedAtKey"
+          },
+          {
+            "type": "object",
+            "required": [
+              "attributes"
+            ],
+            "properties": {
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "created_at",
+                  "address"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "example": "11-11-2011 11:11:11"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CreatedAtKey": {
         "type": "object",
         "required": [
-          "address",
-          "created_at"
+          "type"
         ],
         "properties": {
-          "address": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string"
+          "type": {
+            "type": "string",
+            "enum": [
+              "created_at"
+            ]
           }
         }
       },
