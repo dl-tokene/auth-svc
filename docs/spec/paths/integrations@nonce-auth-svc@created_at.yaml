@@ -1,4 +1,4 @@
-post:
+get:
   tags:
     - User Authentication
   summary: Created at

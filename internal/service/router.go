@@ -33,10 +33,10 @@ func (s *service) router(cfg config.Config) chi.Router {
 	r.Route("/integrations/nonce-auth-svc", func(r chi.Router) {
 		r.Post("/nonce", handlers.GetNonce)
 		r.Post("/register", handlers.Register)
-		r.Post("/refresh_token", handlers.RefreshToken)
+		r.Get("/refresh_token", handlers.RefreshToken)
 		r.Post("/login", handlers.Login)
 		r.Post("/admin_login", handlers.AdminLogin)
-		r.Post("/created_at", handlers.CreatedAt)
+		r.Get("/created_at", handlers.CreatedAt)
 	})
 
 	return r
