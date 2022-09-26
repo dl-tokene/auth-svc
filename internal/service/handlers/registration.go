@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
@@ -16,7 +16,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewRegistrationRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		ape.RenderErr(w, apierrors.BadRequest(apierrors.CodeBadRequestData, err))
 		return
 	}
 
@@ -35,11 +35,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	existingAddress, err := db.Users().FilterByAddress(ethAddress).Get()
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 	if existingAddress != nil {
-		ape.RenderErr(w, problems.Conflict())
+		ape.RenderErr(w, apierrors.Conflict())
 		return
 	}
 
@@ -47,7 +47,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now()})
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 
@@ -55,7 +55,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
 		logger.WithError(err).Error("failed to generate jwt")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 

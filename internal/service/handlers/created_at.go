@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/resources"
 )
@@ -18,13 +19,13 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 	address, _, _, err := helpers.ValidatePurposeJWT(doorman, r)
 	if err != nil {
 		logger.WithError(err).Debug("failed authentication")
-		ape.RenderErr(w, problems.Unauthorized())
+		ape.RenderErr(w, apierrors.Unauthorized(apierrors.CodeUnauthorized))
 		return
 	}
 
 	user, err := db.Users().FilterByAddress(address).Get()
 	if user == nil {
-		ape.RenderErr(w, problems.NotFound())
+		ape.RenderErr(w, apierrors.NotFound(errors.New("User not found")))
 		return
 	}
 
