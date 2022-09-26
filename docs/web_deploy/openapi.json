@@ -12,12 +12,13 @@
     }
   ],
   "paths": {
-    "/admin_login": {
+    "/integrations/nonce-auth-svc/admin_login": {
       "post": {
         "tags": [
           "Admin Authentication"
         ],
         "summary": "AdminLogin",
+        "description": "Using signed nonce, get a jwt pair for login.",
         "operationId": "adminlogin",
         "requestBody": {
           "content": {
@@ -92,16 +93,23 @@
         }
       }
     },
-    "/created_at": {
+    "/integrations/nonce-auth-svc/created_at": {
       "post": {
         "tags": [
           "User Authentication"
         ],
         "summary": "Created at",
         "operationId": "createdAt",
-        "security": [
+        "description": "Get information when jwt owner was registered",
+        "parameters": [
           {
-            "bearerAuth": []
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "Bearer {token}",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
           }
         ],
         "responses": {
@@ -138,13 +146,14 @@
         }
       }
     },
-    "/login": {
+    "/integrations/nonce-auth-svc/login": {
       "post": {
         "tags": [
           "User Authentication"
         ],
         "summary": "Login",
         "operationId": "login",
+        "description": "Using signed nonce, get a jwt pair for login.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -218,7 +227,7 @@
         }
       }
     },
-    "/nonce": {
+    "/integrations/nonce-auth-svc/nonce": {
       "post": {
         "tags": [
           "User Authentication"
@@ -290,17 +299,23 @@
         }
       }
     },
-    "/refresh_token": {
+    "/integrations/nonce-auth-svc/refresh_token": {
       "post": {
         "tags": [
           "User Authentication"
         ],
         "summary": "Refresh token",
-        "description": "Use Bearer authentication for make request.",
+        "description": "Use Bearer authentication for make a request. Get new jwt pair pair with refreshed exp time.",
         "operationId": "refreshToken",
-        "security": [
+        "parameters": [
           {
-            "bearerAuth": []
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "Bearer {token}",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
           }
         ],
         "responses": {
@@ -337,13 +352,14 @@
         }
       }
     },
-    "/register": {
+    "/integrations/nonce-auth-svc/register": {
       "post": {
         "tags": [
           "User Authentication"
         ],
         "summary": "Registration",
         "operationId": "register",
+        "description": "Using signed nonce, get a jwt pair and register new address.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2622,15 +2638,6 @@
           ],
           "default": "desc",
           "description": "Order of records on the page. If sortingParam is not specified, order of records is by default sorted by ID."
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "bearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
         }
       }
     }
