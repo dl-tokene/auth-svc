@@ -1,8 +1,9 @@
 post:
   tags:
-    - User Authentication
-  summary: Login
-  operationId: login
+    - Admin Authentication
+  summary: AdminLogin
+  description: Using signed nonce, get a jwt pair for login.
+  operationId: adminlogin
   requestBody:
     content:
       application/json:
@@ -13,7 +14,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/AdminLogin'
   responses:
     '200':
       description: Success
@@ -24,7 +25,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/Login'
+                $ref: '#/components/schemas/JwtPair'
     '400':
       description: Bad Request
       content:
@@ -38,5 +39,12 @@ post:
                 type: array
                 items:
                   $ref: "#/components/schemas/LoginError"
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/UnauthorizedError"
     '500':
       $ref: "#/components/responses/InternalError"

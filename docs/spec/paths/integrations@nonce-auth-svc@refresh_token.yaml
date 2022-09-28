@@ -1,0 +1,35 @@
+get:
+  tags:
+    - User Authentication
+  summary: Refresh token
+  description: Use Bearer authentication for make a request. Get new jwt pair pair with refreshed exp time.
+  operationId: refreshToken
+  
+  parameters:
+    - in: header
+      name: Authorization
+      schema:
+        type: string
+        format: Bearer {token}
+        example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/JwtPair'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/UnauthorizedError"
+    '500':
+      $ref: "#/components/responses/InternalError"

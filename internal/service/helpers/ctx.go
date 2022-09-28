@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/distributed_lab/logan/v3"
+	"gitlab.com/tokene/doorman/connector"
 	gosdk "gitlab.com/tokene/go-sdk"
 	"gitlab.com/tokene/nonce-auth-svc/internal/config"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
@@ -17,6 +18,7 @@ const (
 	dbCtxKey
 	nodeAdminsCtxKey
 	serviceConfigCtxKey
+	doormanConnectorCtxKey
 )
 
 func CtxLog(entry *logan.Entry) func(context.Context) context.Context {
@@ -51,4 +53,12 @@ func NodeAdmins(r *http.Request) gosdk.NodeAdminsI {
 }
 func ServiceConfig(r *http.Request) *config.ServiceConfig {
 	return r.Context().Value(serviceConfigCtxKey).(*config.ServiceConfig)
+}
+func CtxDoormanConnector(entry connector.ConnectorI) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, doormanConnectorCtxKey, entry)
+	}
+}
+func DoormanConnector(r *http.Request) connector.ConnectorI {
+	return r.Context().Value(doormanConnectorCtxKey).(connector.ConnectorI)
 }

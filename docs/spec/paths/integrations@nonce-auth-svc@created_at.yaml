@@ -1,8 +1,9 @@
 get:
   tags:
     - User Authentication
-  summary: Refresh token endpoint
-  operationId: refreshToken
+  summary: Created at
+  operationId: createdAt
+  description: Get information when jwt owner was registered
   parameters:
     - in: header
       name: Authorization
@@ -20,8 +21,13 @@ get:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/Login'
-    '400':
-      $ref: "#/components/responses/BadRequest"
+                $ref: '#/components/schemas/CreatedAt'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/UnauthorizedError"
     '500':
       $ref: "#/components/responses/InternalError"

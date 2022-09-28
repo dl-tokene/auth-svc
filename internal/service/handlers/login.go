@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"gitlab.com/distributed_lab/ape"
-	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
+	"gitlab.com/distributed_lab/ape/problems"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
-	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
 )
 
@@ -15,69 +15,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewLoginRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, apierrors.BadRequest(apierrors.CodeBadRequestData, err))
 		return
 	}
-	db := helpers.DB(r)
 
 	ethAddress := request.Data.Attributes.AuthPair.Address
 	signature := request.Data.Attributes.AuthPair.SignedMessage
 
-	address, err := db.Users().FilterByAddress(ethAddress).Get()
-	if address == nil {
-		ape.RenderErr(w, errors.BadRequest(errors.CodeNotFound))
-		return
-	}
+	apiErr, err := helpers.ValidateNonce(ethAddress, signature, r)
 	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
-		return
-	}
-	nonce, err := db.Nonce().FilterByAddress(ethAddress).Get()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
-		return
-	}
-	if nonce == nil {
-		logger.WithField("address", ethAddress).Debug("nonce not found on login")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeNonceNotFound))
-		return
-	}
-
-	err = helpers.VerifySignature(helpers.NonceToHash(nonce), signature, ethAddress)
-	if err != nil {
-		logger.WithError(err).Debug("signature verification failed")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeSignatureVerificationFailed, err))
+		logger.WithError(err).Debug("failed to validate nonce")
+		ape.RenderErr(w, apiErr)
 		return
 	}
 
 	// success logic
-	token, err := helpers.GenerateJWT(address, helpers.AuthTypeSession, helpers.ServiceConfig(r))
+	doorman := helpers.DoormanConnector(r)
+	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
-		details := "failed to generate a token"
-		logger.WithError(err).Error(details)
-		ape.RenderErr(w, errors.InternalError(details))
-		return
-	}
-	refreshToken, err := helpers.GenerateRefreshToken(address, helpers.ServiceConfig(r))
-	if err != nil {
-		details := "failed to generate a refresh token"
-		logger.WithError(err).Error(details)
-		ape.Render(w, errors.InternalError(details))
+		logger.WithError(err).Error("failed to generate jwt")
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	err = db.Nonce().FilterByAddress(ethAddress).Delete()
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
-		return
-	}
-
-	ape.Render(w, models.NewLoginModel(
-		token,
-		refreshToken,
-		helpers.ServiceConfig(r).TokenExpireTime,
-		helpers.ServiceConfig(r).RefreshTokenExpireTime))
+	ape.Render(w, pair)
 }

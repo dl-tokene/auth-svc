@@ -7,7 +7,7 @@ import (
 	nonces "github.com/LarryBattle/nonce-golang"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/tokene/nonce-auth-svc/internal/data"
-	errors "gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/models"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/requests"
@@ -19,15 +19,14 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewNonceRequest(r)
 	if err != nil {
 		logger.WithError(err).Debug("bad request")
-		ape.RenderErr(w, errors.BadRequest(errors.CodeBadRequestData, err))
+		ape.RenderErr(w, apierrors.BadRequest(apierrors.CodeBadRequestData, err))
 		return
 	}
 	address := request.Data.Attributes.Address
 	termsHash := request.Data.Attributes.TermsHash
 	db := helpers.DB(r)
 
-	timeToExpire := helpers.ServiceConfig(r).NonceExpireTime
-	expireTime := time.Now().UTC().Add(timeToExpire)
+	expireTime := time.Now().UTC().Add(helpers.ServiceConfig(r).NonceExpireTime)
 	nonceToken := nonces.NewToken()
 
 	var message string = util.NonceToMessage(nonceToken)
@@ -46,13 +45,13 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 	err = db.Nonce().FilterByAddress(address).Delete()
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 	_, err = db.Nonce().Insert(nonce)
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, errors.InternalError(errors.InternalError(), err))
+		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
 

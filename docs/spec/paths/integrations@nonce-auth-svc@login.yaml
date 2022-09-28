@@ -1,8 +1,9 @@
 post:
   tags:
     - User Authentication
-  summary: Registration
-  operationId: register
+  summary: Login
+  operationId: login
+  description: Using signed nonce, get a jwt pair for login.
   requestBody:
     content:
       application/json:
@@ -13,10 +14,10 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/Register'
+              $ref: '#/components/schemas/Login'
   responses:
-    '201':
-      description: Created
+    '200':
+      description: Success
       content:
         application/json:
           schema:
@@ -24,7 +25,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/Registration'
+                $ref: '#/components/schemas/JwtPair'
     '400':
       description: Bad Request
       content:
@@ -37,8 +38,13 @@ post:
               errors:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RegistrationError"
-    '409':
-      $ref: "#/components/responses/Conflict"
+                  $ref: "#/components/schemas/LoginError"
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/UnauthorizedError"
     '500':
       $ref: "#/components/responses/InternalError"

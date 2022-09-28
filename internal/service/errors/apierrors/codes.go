@@ -7,6 +7,7 @@ const (
 	CodeBadRequestData = "bad_request_data"
 	// Login
 	CodeNotRegistered = "not_registered"
+	CodeAdminNotFound = "admin_not_found"
 	// Quotes
 	CodeFailedPriceLookup = "failed_price_lookup"
 	// Address Deletion

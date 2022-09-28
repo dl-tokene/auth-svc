@@ -1,8 +1,9 @@
 post:
   tags:
-    - Admin Authentication
-  summary: AdminLogin
-  operationId: adminlogin
+    - User Authentication
+  summary: Registration
+  operationId: register
+  description: Using signed nonce, get a jwt pair and register new address.
   requestBody:
     content:
       application/json:
@@ -13,7 +14,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/AdminLoginRequest'
+              $ref: '#/components/schemas/Register'
   responses:
     '201':
       description: Created
@@ -24,7 +25,7 @@ post:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/AdminLogin'
+                $ref: '#/components/schemas/JwtPair'
     '400':
       description: Bad Request
       content:
@@ -37,6 +38,8 @@ post:
               errors:
                 type: array
                 items:
-                  $ref: "#/components/schemas/LoginError"
+                  $ref: "#/components/schemas/RegistrationError"
+    '409':
+      $ref: "#/components/responses/Conflict"
     '500':
       $ref: "#/components/responses/InternalError"

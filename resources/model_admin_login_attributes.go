@@ -5,11 +5,5 @@
 package resources
 
 type AdminLoginAttributes struct {
-	AccessToken string `json:"access_token"`
-	// In seconds
-	ExpiresIn int64 `json:"expires_in"`
-	// In hours
-	RefreshExpiresIn int64  `json:"refresh_expires_in"`
-	RefreshToken     string `json:"refresh_token"`
-	TokenType        string `json:"token_type"`
+	AuthPair AuthPair `json:"auth_pair"`
 }

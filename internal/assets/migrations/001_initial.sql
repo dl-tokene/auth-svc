@@ -2,8 +2,8 @@
 
 create table users (
     id bigserial primary key,
-    createdat timestamp without time zone not null,
-    address Bytea
+    address Bytea,
+    createdat timestamp without time zone not null
 );
 
 create table nonce (

@@ -20,7 +20,7 @@ type UsersQ interface {
 }
 
 type User struct {
-	Address   string     `db:"address" structs:"address"`
-	ID        int64      `db:"id" structs:"-"`
-	CreatedAt *time.Time `db:"createdat" structs:"createdat"`
+	Address   string    `db:"address" structs:"address"`
+	ID        int64     `db:"id" structs:"-"`
+	CreatedAt time.Time `db:"createdat" structs:"createdat"`
 }
