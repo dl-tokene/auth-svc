@@ -9,7 +9,6 @@ require (
 	github.com/ethereum/go-ethereum v1.10.23
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-chi/cors v1.2.1
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/google/jsonapi v1.0.0
 	github.com/rubenv/sql-migrate v1.1.2
@@ -18,7 +17,7 @@ require (
 	gitlab.com/distributed_lab/kit v1.11.1
 	gitlab.com/distributed_lab/logan v3.8.1+incompatible
 	gitlab.com/distributed_lab/running v1.6.0
-	gitlab.com/tokene/doorman v0.0.0-20220921122918-83c56ab7deda
+	gitlab.com/tokene/doorman v0.0.0-20220928142031-13ce24959a81
 	gitlab.com/tokene/go-sdk v0.1.1
 )
 
