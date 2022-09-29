@@ -44,17 +44,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// success logic
-	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now()})
-	if err != nil {
-		logger.WithError(err).Error("failed to query db")
-		ape.RenderErr(w, apierrors.InternalError(err))
-		return
-	}
-
 	doorman := helpers.DoormanConnector(r)
 	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
 	if err != nil {
 		logger.WithError(err).Error("failed to generate jwt")
+		ape.RenderErr(w, apierrors.InternalError(err))
+		return
+	}
+
+	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now()})
+	if err != nil {
+		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, apierrors.InternalError(err))
 		return
 	}
