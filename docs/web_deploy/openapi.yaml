@@ -7,6 +7,45 @@ servers:
   - url: 'https://api.demo.tokend.io'
     description: TokenD Developer Environment
 paths:
+  /created_at:
+    get:
+      tags:
+        - User Authentication
+      summary: CreatedAt
+      operationId: createdAt
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            format: 'Bearer {token}'
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/CreatedAt'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LoginError'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /integrations/nonce-auth-svc/admin_login:
     post:
       tags:
@@ -384,8 +423,9 @@ components:
                 address:
                   type: string
                 created_at:
-                  type: string
-                  example: '11-11-2011 11:11:11'
+                  type: integer
+                  format: int64
+                  example: '1321053071'
     CreatedAtKey:
       type: object
       required:
@@ -1930,7 +1970,8 @@ components:
               type: object
               properties:
                 expires_in:
-                  type: int64
+                  type: integer
+                  format: int64
                   example: 3000
     JwtKey:
       type: object

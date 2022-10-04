@@ -10,6 +10,7 @@ allOf:
         type: object
         properties:
           expires_in:
-            type: int64
+            type: integer
+            format: int64
             example: 3000
         
