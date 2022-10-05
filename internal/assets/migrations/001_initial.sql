@@ -3,13 +3,13 @@
 create table users (
     id bigserial primary key,
     address Bytea,
-    createdat BIGINT not null
+    createdat bigint not null
 );
 
 create table nonce (
     id bigserial primary key,
     message text not null,
-    expiresat BIGINT not null,
+    expiresat bigint not null,
     address Bytea
 
 );
