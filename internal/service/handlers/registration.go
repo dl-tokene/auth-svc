@@ -52,7 +52,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now()})
+	_, err = db.Users().Insert(data.User{Address: ethAddress, CreatedAt: time.Now().Unix()})
 	if err != nil {
 		logger.WithError(err).Error("failed to query db")
 		ape.RenderErr(w, apierrors.InternalError(err))

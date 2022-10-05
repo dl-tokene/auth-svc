@@ -3,14 +3,15 @@
 create table users (
     id bigserial primary key,
     address Bytea,
-    createdat timestamp without time zone not null
+    createdat BIGINT not null
 );
 
 create table nonce (
     id bigserial primary key,
     message text not null,
-    expiresat timestamp without time zone not null,
+    expiresat BIGINT not null,
     address Bytea
+
 );
 
 -- +migrate Down

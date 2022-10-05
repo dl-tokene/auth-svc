@@ -1,8 +1,6 @@
 package data
 
 import (
-	"time"
-
 	"gitlab.com/distributed_lab/kit/pgdb"
 )
 
@@ -20,7 +18,7 @@ type UsersQ interface {
 }
 
 type User struct {
-	Address   string    `db:"address" structs:"address"`
-	ID        int64     `db:"id" structs:"-"`
-	CreatedAt time.Time `db:"createdat" structs:"createdat"`
+	Address   string `db:"address" structs:"address"`
+	ID        int64  `db:"id" structs:"-"`
+	CreatedAt int64  `db:"createdat" structs:"createdat"`
 }

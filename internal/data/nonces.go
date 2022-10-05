@@ -1,9 +1,5 @@
 package data
 
-import (
-	"time"
-)
-
 type NonceQ interface {
 	Get() (*Nonce, error)
 	Select() ([]Nonce, error)
@@ -16,8 +12,8 @@ type NonceQ interface {
 }
 
 type Nonce struct {
-	ID      int64      `db:"id" structs:"-"`
-	Message string     `db:"message" structs:"message"`
-	Expires *time.Time `db:"expiresat" structs:"expiresat"`
-	Address string     `db:"address" structs:"address"`
+	ID      int64  `db:"id" structs:"-"`
+	Message string `db:"message" structs:"message"`
+	Expires int64  `db:"expiresat" structs:"expiresat"`
+	Address string `db:"address" structs:"address"`
 }

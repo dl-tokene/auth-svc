@@ -35,7 +35,7 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 			Key: resources.Key{Type: resources.CREATED_AT},
 			Attributes: resources.CreatedAtAttributes{
 				Address:   address,
-				CreatedAt: user.CreatedAt.Unix(),
+				CreatedAt: user.CreatedAt,
 			},
 		},
 	}
