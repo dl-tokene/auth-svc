@@ -384,8 +384,9 @@ components:
                 address:
                   type: string
                 created_at:
-                  type: string
-                  example: '11-11-2011 11:11:11'
+                  type: integer
+                  format: int64
+                  example: '1321053071'
     CreatedAtKey:
       type: object
       required:
@@ -1930,7 +1931,8 @@ components:
               type: object
               properties:
                 expires_in:
-                  type: int64
+                  type: integer
+                  format: int64
                   example: 3000
     JwtKey:
       type: object

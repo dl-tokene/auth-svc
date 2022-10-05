@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"errors"
-	"net/http"
-
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/errors/apierrors"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
 	"gitlab.com/tokene/nonce-auth-svc/resources"
+	"net/http"
 )
 
 func CreatedAt(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +35,7 @@ func CreatedAt(w http.ResponseWriter, r *http.Request) {
 			Key: resources.Key{Type: resources.CREATED_AT},
 			Attributes: resources.CreatedAtAttributes{
 				Address:   address,
-				CreatedAt: user.CreatedAt.Format("02-01-2006 15:04:05"),
+				CreatedAt: user.CreatedAt,
 			},
 		},
 	}

@@ -37,7 +37,7 @@ func GetNonce(w http.ResponseWriter, r *http.Request) {
 
 	nonce := data.Nonce{
 		Message: nonceToken,
-		Expires: &expireTime,
+		Expires: expireTime.Unix(),
 		Address: address,
 	}
 

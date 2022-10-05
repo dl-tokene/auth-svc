@@ -6,5 +6,5 @@ package resources
 
 type CreatedAtAttributes struct {
 	Address   string `json:"address"`
-	CreatedAt string `json:"created_at"`
+	CreatedAt int64  `json:"created_at"`
 }

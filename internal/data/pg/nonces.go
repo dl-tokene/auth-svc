@@ -88,6 +88,6 @@ func (q *nonceQ) FilterByAddress(addresses ...string) data.NonceQ {
 }
 
 func (q *nonceQ) FilterExpired() data.NonceQ {
-	q.sql = sq.StatementBuilder.Where("expiresat < ?", time.Now().UTC())
+	q.sql = sq.StatementBuilder.Where("expiresat < ?", time.Now().Unix())
 	return q
 }

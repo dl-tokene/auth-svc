@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const LayoutISO8601Date = "2006-01-02"
+const LayoutISO8601Date = 1664913934
 
 var AddressRegexp = regexp.MustCompile("^(0x)?[0-9a-fA-F]{40}$")
 var SignatureRegexp = regexp.MustCompile("^0x[0-9a-fA-F]+$")
