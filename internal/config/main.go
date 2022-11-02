@@ -14,6 +14,7 @@ type Config interface {
 	pgdb.Databaser
 	types.Copuser
 	ServiceConfiger
+	Adminer
 	comfig.Listenerer
 	doormanCfg.DoormanConfiger
 }
@@ -25,6 +26,7 @@ type config struct {
 	comfig.Listenerer
 	getter kv.Getter
 	ServiceConfiger
+	Adminer
 	doormanCfg.DoormanConfiger
 }
 
@@ -37,5 +39,6 @@ func New(getter kv.Getter) Config {
 		Logger:          comfig.NewLogger(getter, comfig.LoggerOpts{}),
 		ServiceConfiger: NewServiceConfiger(getter),
 		DoormanConfiger: doormanCfg.NewDoormanConfiger(getter),
+		Adminer:         NewAdminer(getter),
 	}
 }

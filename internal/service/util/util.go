@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"regexp"
 	"strings"
 )
@@ -38,4 +39,13 @@ func StringSliceToLowercase(inp []string) []string {
 		newSlice = append(newSlice, strings.ToLower(str))
 	}
 	return newSlice
+}
+
+func StringSliceToAddresses(addresses []string) []common.Address {
+	ethAddresses := make([]common.Address, 0, len(addresses))
+	for _, address := range addresses {
+		ethAddresses = append(ethAddresses, common.HexToAddress(address))
+	}
+
+	return ethAddresses
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
 	gosdk "gitlab.com/tokene/go-sdk"
@@ -9,6 +8,7 @@ import (
 	"gitlab.com/tokene/nonce-auth-svc/internal/data/pg"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/handlers"
 	"gitlab.com/tokene/nonce-auth-svc/internal/service/helpers"
+	"gitlab.com/tokene/nonce-auth-svc/internal/service/util"
 )
 
 func (s *service) router(cfg config.Config) chi.Router {
@@ -21,7 +21,7 @@ func (s *service) router(cfg config.Config) chi.Router {
 			helpers.CtxLog(s.log),
 			helpers.CtxDB(pg.NewMasterQ(cfg.DB())),
 			helpers.CtxServiceConfig(cfg.ServiceConfig()),
-			helpers.CtxNodeAdmins(gosdk.NewNodeAdminsMock(common.HexToAddress("0x750Bd531CEA1f68418DDF2373193CfbD86A69058"))), //TODO change when admin's smart contracts ready
+			helpers.CtxNodeAdmins(gosdk.NewNodeAdminsMock(util.StringSliceToAddresses(cfg.AdminsConfig().Admins)...)), //TODO change when admin's smart contracts ready
 			helpers.CtxDoormanConnector(cfg.DoormanConnector()),
 		),
 	)
