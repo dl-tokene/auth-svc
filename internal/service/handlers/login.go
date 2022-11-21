@@ -29,6 +29,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := helpers.DB(r).Users().FilterByAddress(ethAddress).Get()
+	if err != nil {
+		logger.WithError(err).Error("failed to get user")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	if user == nil {
+		logger.Debug("user not found")
+		ape.RenderErr(w, problems.NotFound())
+		return
+	}
+
 	// success logic
 	doorman := helpers.DoormanConnector(r)
 	pair, err := doorman.GenerateJwtPair(ethAddress, "session")
