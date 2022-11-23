@@ -1,10 +1,5 @@
 -- +migrate Up
 
-create table users (
-    id bigserial primary key,
-    address Bytea,
-    createdat bigint not null
-);
 
 create table nonce (
     id bigserial primary key,
@@ -17,4 +12,3 @@ create table nonce (
 -- +migrate Down
 
 drop table nonce;
-drop table users;
