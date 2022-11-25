@@ -19,9 +19,6 @@ func (m *masterQ) New() data.MasterQ {
 	return NewMasterQ(m.db)
 }
 
-func (m *masterQ) Users() data.UsersQ {
-	return newUsersQ(m.db)
-}
 func (m *masterQ) Nonce() data.NonceQ {
 	return newNonceQ(m.db)
 }
