@@ -34,6 +34,9 @@ func (c ConnectorMockKyc) GetAuthToken(r *http.Request) (string, error) {
 func (c ConnectorMockKyc) CheckPermission(owner string, token string) error {
 	return nil
 }
+func (c ConnectorMockKyc) CheckPermissionID(id, resource, token string) error {
+	return nil
+}
 func (c ConnectorMockKyc) CheckPurpose(token string) (string, error) {
 	return "session", nil
 }

@@ -84,7 +84,7 @@ func RetrieveTokenClaims(tokenString string, r *http.Request) (jwt.MapClaims, er
 	return tokenClaims, nil
 }
 
-//Returns address
+// Returns address
 func RetrieveToken(tokenString string, r *http.Request) (string, error) {
 	tokenClaims, err := RetrieveTokenClaims(tokenString, r)
 	if err != nil {
@@ -135,8 +135,10 @@ func GetAccessTokenInfo(r *http.Request) (string, string, error) {
 		return "", "", err
 	}
 
-	purpose, address, err := RetrieveAccessToken(token, r)
+	purpose, address, _ := RetrieveAccessToken(token, r)
+
 	return purpose, address, err
+
 }
 
 func GetTokenInfo(r *http.Request) (string, error) {
